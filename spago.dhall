@@ -1,4 +1,4 @@
-{ name = "homogeneous-records"
+{ name = "record-extra-srghma"
 , dependencies =
     [ "record"
     , "typelevel-prelude"
