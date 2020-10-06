@@ -1,6 +1,6 @@
 module Record.ExtraSrghma.Pop where
 
-import Type.Prelude (class IsSymbol, SProxy)import Type.Prelude (class IsSymbol, SProxy)
+import Type.Prelude (class IsSymbol, SProxy)
 import Prim.Row as Row
 import Record as Record
 import Data.Tuple (Tuple(..))
