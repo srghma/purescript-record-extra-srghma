@@ -5,3 +5,4 @@ module Record.ExtraSrghma
 import Record.ExtraSrghma.MapIndex (class MapIndex, mapIndex, mapIndexBuilder) as Export
 import Record.ExtraSrghma.MapValuesWithIndex (class MapValuesWithIndex, mapValuesWithIndex, mapValuesWithIndexBuilder) as Export
 import Record.ExtraSrghma.ParSequenceRecord (class ParSequenceRecord, parSequenceRecord, parSequenceRecordImpl) as Export
+import Record.ExtraSrghma.Pop (pop) as Export
