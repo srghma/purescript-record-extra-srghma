@@ -17,7 +17,7 @@ mapIndex f rowProxy = Builder.build builder {}
   where
     builder = mapIndexBuilder (RLProxy :: RLProxy xs) f
 
-class MapIndex (xs :: RL.RowList) (row :: # Type) a b (from :: # Type) (to :: # Type)
+class MapIndex (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | xs -> row a b from to where
   mapIndexBuilder :: RLProxy xs -> (String -> b) -> Builder { | from } { | to }
 

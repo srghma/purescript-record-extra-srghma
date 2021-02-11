@@ -22,7 +22,7 @@ mapValuesWithIndex f r = Builder.build builder {}
   where
     builder = mapValuesWithIndexBuilder (RLProxy :: RLProxy xs) f r
 
-class MapValuesWithIndex (xs :: RL.RowList) (row :: # Type) a b (from :: # Type) (to :: # Type)
+class MapValuesWithIndex (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | xs -> row a b from to where
   mapValuesWithIndexBuilder :: RLProxy xs -> (String -> a -> b) -> Record row -> Builder { | from } { | to }
 
