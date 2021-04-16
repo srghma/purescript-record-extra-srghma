@@ -7,8 +7,15 @@
     , "assert"
     , "lists"
     , "parallel"
-    , "record-extra"
     , "js-timers"
+    , "arrays"
+    , "console"
+    , "effect"
+    , "functions"
+    , "maybe"
+    , "prelude"
+    , "transformers"
+    , "tuples"
     ]
 , packages = ./packages.dhall
 , sources = [ "src/**/*.purs", "test/**/*.purs" ]

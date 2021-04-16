@@ -3,7 +3,7 @@ module Record.ExtraSrghma.MapValuesWithIndex where
 import Prelude
 
 import Record as Record
-import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy), reflectSymbol)
+import Type.Prelude (class IsSymbol, reflectSymbol, Proxy(..))
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
@@ -20,11 +20,11 @@ mapValuesWithIndex :: forall row xs a b row'
   -> Record row'
 mapValuesWithIndex f r = Builder.build builder {}
   where
-    builder = mapValuesWithIndexBuilder (RLProxy :: RLProxy xs) f r
+    builder = mapValuesWithIndexBuilder (Proxy :: Proxy xs) f r
 
 class MapValuesWithIndex (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | xs -> row a b from to where
-  mapValuesWithIndexBuilder :: RLProxy xs -> (String -> a -> b) -> Record row -> Builder { | from } { | to }
+  mapValuesWithIndexBuilder :: Proxy xs -> (String -> a -> b) -> Record row -> Builder { | from } { | to }
 
 instance mapValuesWithIndexCons ::
   ( IsSymbol name
@@ -36,9 +36,9 @@ instance mapValuesWithIndexCons ::
   mapValuesWithIndexBuilder _ f r =
     first <<< rest
     where
-      nameP = SProxy :: SProxy name
+      nameP = Proxy :: Proxy name
       val = f (reflectSymbol nameP) (Record.get nameP r)
-      rest = mapValuesWithIndexBuilder (RLProxy :: RLProxy tail) f r
+      rest = mapValuesWithIndexBuilder (Proxy :: Proxy tail) f r
       first = Builder.insert nameP val
 
 instance mapValuesWithIndexNil :: MapValuesWithIndex RL.Nil row a b () () where

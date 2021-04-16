@@ -3,7 +3,7 @@ module Record.ExtraSrghma.ParSequenceRecord where
 import Prelude
 
 import Record as Record
-import Type.Prelude (class IsSymbol, RLProxy(RLProxy), SProxy(SProxy))
+import Type.Prelude (class IsSymbol, Proxy(..))
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
@@ -17,12 +17,12 @@ parSequenceRecord :: forall row row' rl parM m
   -> m (Record row')
 parSequenceRecord a = sequential $ Builder.build <@> {} <$> builder
   where
-    builder = parSequenceRecordImpl (RLProxy :: RLProxy rl) a
+    builder = parSequenceRecordImpl (Proxy :: Proxy rl) a
 
 class Parallel parM m <= ParSequenceRecord rl row from to parM m
   | rl -> row from to parM m
   where
-    parSequenceRecordImpl :: RLProxy rl -> Record row -> parM (Builder { | from } { | to })
+    parSequenceRecordImpl :: Proxy rl -> Record row -> parM (Builder { | from } { | to })
 
 instance parSequenceRecordSingle ::
   ( IsSymbol name
@@ -33,7 +33,7 @@ instance parSequenceRecordSingle ::
   ) => ParSequenceRecord (RL.Cons name (m ty) RL.Nil) row () to parM m where
   parSequenceRecordImpl _ a = Builder.insert namep <$> valA
     where
-      namep = SProxy :: SProxy name
+      namep = Proxy :: Proxy name
 
       valA ::  parM ty
       valA = parallel $ Record.get namep a
@@ -47,12 +47,12 @@ else instance parSequenceRecordCons ::
   ) => ParSequenceRecord (RL.Cons name (m ty) tail) row from to parM m where
   parSequenceRecordImpl _ a  = fn <$> valA <*> rest
     where
-      namep = SProxy :: SProxy name
+      namep = Proxy :: Proxy name
 
       valA :: parM ty
       valA = parallel $ Record.get namep a
 
-      tailp = RLProxy :: RLProxy tail
+      tailp = Proxy :: Proxy tail
 
       rest :: parM (Builder (Record from) (Record from'))
       rest = parSequenceRecordImpl tailp a

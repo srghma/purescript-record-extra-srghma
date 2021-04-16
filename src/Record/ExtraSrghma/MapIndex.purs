@@ -1,7 +1,7 @@
 module Record.ExtraSrghma.MapIndex where
 
 import Prelude
-import Type.Prelude (class IsSymbol, RLProxy(RLProxy), RProxy, SProxy(SProxy), reflectSymbol)
+import Type.Prelude (class IsSymbol, Proxy(..), reflectSymbol)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
@@ -11,15 +11,15 @@ mapIndex :: forall row xs a b row'
    . RL.RowToList row xs
   => MapIndex xs row a b () row'
   => (String -> b)
-  -> RProxy row
+  -> Proxy row
   -> Record row'
 mapIndex f rowProxy = Builder.build builder {}
   where
-    builder = mapIndexBuilder (RLProxy :: RLProxy xs) f
+    builder = mapIndexBuilder (Proxy :: Proxy xs) f
 
 class MapIndex (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | xs -> row a b from to where
-  mapIndexBuilder :: RLProxy xs -> (String -> b) -> Builder { | from } { | to }
+  mapIndexBuilder :: Proxy xs -> (String -> b) -> Builder { | from } { | to }
 
 instance mapIndexCons ::
   ( IsSymbol name
@@ -31,9 +31,9 @@ instance mapIndexCons ::
   mapIndexBuilder _ f =
     first <<< rest
     where
-      nameP = SProxy :: SProxy name
+      nameP = Proxy :: Proxy name
       val = f (reflectSymbol nameP)
-      rest = mapIndexBuilder (RLProxy :: RLProxy tail) f
+      rest = mapIndexBuilder (Proxy :: Proxy tail) f
       first = Builder.insert nameP val
 
 instance mapIndexNil :: MapIndex RL.Nil row a b () () where
