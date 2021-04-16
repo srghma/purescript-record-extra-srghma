@@ -6,11 +6,12 @@ import Control.Monad.Cont.Trans (ContT(..), runContT)
 import Effect (Effect)
 import Effect.Console (logShow)
 import Effect.Timer (setTimeout)
-import Record.ExtraSrghma
+import Record.ExtraSrghma (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapRecord, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy)
 import Test.Assert (assert')
 import Type.Prelude (Proxy(..))
 import Data.List as List
 
+type WithoutVals :: forall k. k -> Row k
 type WithoutVals type_ =
   ( a :: type_
   , b :: type_
