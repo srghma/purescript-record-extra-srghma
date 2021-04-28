@@ -1,0 +1,34 @@
+{
+    "name": "purescript-record-extra-srghma",
+    "license": [
+        "Apache-2.0"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/srghma/purescript-record-extra-srghma"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "output"
+    ],
+    "dependencies": {
+        "purescript-arrays": "^v6.0.0",
+        "purescript-assert": "^v5.0.0",
+        "purescript-console": "^v5.0.0",
+        "purescript-control": "^v5.0.0",
+        "purescript-effect": "^v3.0.0",
+        "purescript-functions": "^v5.0.0",
+        "purescript-js-timers": "^v5.0.1",
+        "purescript-lists": "^v6.0.0",
+        "purescript-maybe": "^v5.0.0",
+        "purescript-parallel": "^v5.0.0",
+        "purescript-prelude": "^v5.0.0",
+        "purescript-record": "^v3.0.0",
+        "purescript-transformers": "^v5.0.0",
+        "purescript-tuples": "^v6.0.0",
+        "purescript-typelevel-prelude": "^v6.0.0",
+        "purescript-unfoldable": "^v5.0.0"
+    }
+}
