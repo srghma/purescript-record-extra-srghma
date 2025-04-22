@@ -31,17 +31,17 @@ foldMapValuesL f = foldlValues (\acc x -> acc <> f x) mempty
 class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
-  )
-  <= FoldlValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
+  ) <=
+  FoldlValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
-    foldlValuesImpl
-      :: forall accum
-       . Proxy rowList
-      -> (accum -> fieldType -> accum)
-      -> accum
-      -> Record row
-      -> accum
+  foldlValuesImpl
+    :: forall accum
+     . Proxy rowList
+    -> (accum -> fieldType -> accum)
+    -> accum
+    -> Record row
+    -> accum
 
 instance foldlValuesCons ::
   ( FoldlValues tailRowList row fieldType
@@ -51,20 +51,21 @@ instance foldlValuesCons ::
   , IsSymbol name
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
-  ) => FoldlValues (RL.Cons name fieldType tailRowList) row fieldType
+  ) =>
+  FoldlValues (RL.Cons name fieldType tailRowList) row fieldType
   where
-    foldlValuesImpl _ f accum record = foldlValuesImpl tailProxy f accum' record
-      where
-        tailProxy :: Proxy tailRowList
-        tailProxy = Proxy
+  foldlValuesImpl _ f accum record = foldlValuesImpl tailProxy f accum' record
+    where
+    tailProxy :: Proxy tailRowList
+    tailProxy = Proxy
 
-        value :: fieldType
-        value = Record.get (Proxy :: Proxy name) record
+    value :: fieldType
+    value = Record.get (Proxy :: Proxy name) record
 
-        accum' = f accum value
+    accum' = f accum value
 
-instance foldlValuesNil
-  :: Homogeneous row fieldType
-  => FoldlValues RL.Nil row fieldType
+instance foldlValuesNil ::
+  Homogeneous row fieldType =>
+  FoldlValues RL.Nil row fieldType
   where
-    foldlValuesImpl _ _ accum _ = accum
+  foldlValuesImpl _ _ accum _ = accum

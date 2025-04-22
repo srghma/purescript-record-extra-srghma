@@ -31,20 +31,21 @@ foldMapValuesLazyR
   -> accum
 foldMapValuesLazyR f = foldrValuesLazy (\x acc -> acc <> f x) mempty
 
-class ( Homogeneous row fieldType
-      , HomogeneousRowList rl fieldType
-      )
-   <= FoldrValuesLazy rl row fieldType
-    | row -> fieldType
+class
+  ( Homogeneous row fieldType
+  , HomogeneousRowList rl fieldType
+  ) <=
+  FoldrValuesLazy rl row fieldType
+  | row -> fieldType
   where
-    foldrValuesLazyImpl
-      :: forall accum
-       . Lazy.Lazy accum
-      => Proxy rl
-      -> (fieldType -> accum -> accum)
-      -> accum
-      -> Record row
-      -> accum
+  foldrValuesLazyImpl
+    :: forall accum
+     . Lazy.Lazy accum
+    => Proxy rl
+    -> (fieldType -> accum -> accum)
+    -> accum
+    -> Record row
+    -> accum
 
 instance foldrValuesLazyCons ::
   ( FoldrValuesLazy tailRowList row fieldType
@@ -54,19 +55,20 @@ instance foldrValuesLazyCons ::
   , IsSymbol name
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
-  ) => FoldrValuesLazy (RL.Cons name fieldType tailRowList) row fieldType
+  ) =>
+  FoldrValuesLazy (RL.Cons name fieldType tailRowList) row fieldType
   where
-    foldrValuesLazyImpl _ f accum record = Lazy.defer \_ ->
-      f value $ foldrValuesLazyImpl tailProxy f accum record
-      where
-        tailProxy :: Proxy tailRowList
-        tailProxy = Proxy
+  foldrValuesLazyImpl _ f accum record = Lazy.defer \_ ->
+    f value $ foldrValuesLazyImpl tailProxy f accum record
+    where
+    tailProxy :: Proxy tailRowList
+    tailProxy = Proxy
 
-        value :: fieldType
-        value = Record.get (Proxy :: Proxy name) record
+    value :: fieldType
+    value = Record.get (Proxy :: Proxy name) record
 
-instance foldrValuesLazyNil
-  :: Homogeneous row fieldType
-  => FoldrValuesLazy RL.Nil row fieldType
+instance foldrValuesLazyNil ::
+  Homogeneous row fieldType =>
+  FoldrValuesLazy RL.Nil row fieldType
   where
-    foldrValuesLazyImpl _ _ accum _ = accum
+  foldrValuesLazyImpl _ _ accum _ = accum

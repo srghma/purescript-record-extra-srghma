@@ -31,25 +31,26 @@ main = do
     foldlValuesWithIndex (\acc key val -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 } == "a1b2c3"
 
   assert' "foldrValues" $
-    foldrValues (+) 0 {a: 1, b: 2, c: 3} == 6
+    foldrValues (+) 0 { a: 1, b: 2, c: 3 } == 6
 
   assert' "foldrValuesLazy" $
     let
-      record = {a: \_ -> 1, b: \_ -> 2, c: \_ -> 3}
+      record = { a: \_ -> 1, b: \_ -> 2, c: \_ -> 3 }
       (result :: Unit -> Int) = foldrValuesLazy (\field accum -> \_ -> field unit + accum unit) (\_ -> 0) record
-     in result unit == 6
+    in
+      result unit == 6
 
   assert' "foldrValuesWithIndex" $
     foldrValuesWithIndex (\key val acc -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 } == "c3b2a1"
 
   assert' "valuesToUnfoldableLazy" $
-    valuesToUnfoldableLazy {a: 1, b: 2, c: 3} == List.fromFoldable [1, 2, 3]
+    valuesToUnfoldableLazy { a: 1, b: 2, c: 3 } == List.fromFoldable [ 1, 2, 3 ]
 
   assert' "mapIndex" $
-    mapIndex (\key -> key) (Proxy :: forall type_ . Proxy (WithoutVals type_)) == { a: "a", b: "b" }
+    mapIndex (\key -> key) (Proxy :: forall type_. Proxy (WithoutVals type_)) == { a: "a", b: "b" }
 
   assert' "mapValuesWithIndex" $
-    mapValuesWithIndex (\key val -> key <> show val) {a: 1, b: 2, c: 3} == { a: "a1", b: "b2", c: "c3" }
+    mapValuesWithIndex (\key val -> key <> show val) { a: 1, b: 2, c: 3 } == { a: "a1", b: "b2", c: "c3" }
 
   let
     (parSequenceRecord__config :: Reqs String) =

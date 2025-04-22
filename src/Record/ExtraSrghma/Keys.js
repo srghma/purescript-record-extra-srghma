@@ -1,9 +1,9 @@
 "use strict";
 
-exports.pickFn = function(ks, r) {
+export function pickFn(ks, r) {
   var copy = {};
   for(var i = 0; i < ks.length; i++) {
       copy[ks[i]] = r[ks[i]];
   }
   return copy;
-};
+}

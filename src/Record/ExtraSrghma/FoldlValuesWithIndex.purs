@@ -31,17 +31,17 @@ foldMapValuesWithIndexL f = foldlValuesWithIndex (\acc key x -> acc <> f key x) 
 class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
-  )
-  <= FoldlValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) fieldType
+  ) <=
+  FoldlValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
-    foldlValuesWithIndexImpl
-      :: forall accum
-       . Proxy rowList
-      -> (accum -> String -> fieldType -> accum)
-      -> accum
-      -> Record row
-      -> accum
+  foldlValuesWithIndexImpl
+    :: forall accum
+     . Proxy rowList
+    -> (accum -> String -> fieldType -> accum)
+    -> accum
+    -> Record row
+    -> accum
 
 instance foldlValuesWithIndexCons ::
   ( FoldlValuesWithIndex tailRowList row fieldType
@@ -51,23 +51,24 @@ instance foldlValuesWithIndexCons ::
   , IsSymbol name
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
-  ) => FoldlValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
+  ) =>
+  FoldlValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
   where
-    foldlValuesWithIndexImpl _ f accum record = foldlValuesWithIndexImpl tailProxy f accum' record
-      where
-        tailProxy :: Proxy tailRowList
-        tailProxy = Proxy
+  foldlValuesWithIndexImpl _ f accum record = foldlValuesWithIndexImpl tailProxy f accum' record
+    where
+    tailProxy :: Proxy tailRowList
+    tailProxy = Proxy
 
-        value :: fieldType
-        value = Record.get (Proxy :: Proxy name) record
+    value :: fieldType
+    value = Record.get (Proxy :: Proxy name) record
 
-        key :: String
-        key = reflectSymbol (Proxy :: Proxy name)
+    key :: String
+    key = reflectSymbol (Proxy :: Proxy name)
 
-        accum' = f accum key value
+    accum' = f accum key value
 
-instance foldlValuesWithIndexNil
-  :: Homogeneous row fieldType
-  => FoldlValuesWithIndex RL.Nil row fieldType
+instance foldlValuesWithIndexNil ::
+  Homogeneous row fieldType =>
+  FoldlValuesWithIndex RL.Nil row fieldType
   where
-    foldlValuesWithIndexImpl _ _ accum _ = accum
+  foldlValuesWithIndexImpl _ _ accum _ = accum

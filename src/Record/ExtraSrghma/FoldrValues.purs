@@ -31,17 +31,17 @@ foldMapValuesR f = foldrValues (\x acc -> acc <> f x) mempty
 class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
-  )
-  <= FoldrValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
+  ) <=
+  FoldrValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
-    foldrValuesImpl
-      :: forall accum
-       . Proxy rowList
-      -> (fieldType -> accum -> accum)
-      -> accum
-      -> Record row
-      -> accum
+  foldrValuesImpl
+    :: forall accum
+     . Proxy rowList
+    -> (fieldType -> accum -> accum)
+    -> accum
+    -> Record row
+    -> accum
 
 instance foldrValuesCons ::
   ( FoldrValues tailRowList row fieldType
@@ -51,19 +51,20 @@ instance foldrValuesCons ::
   , IsSymbol name
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
-  ) => FoldrValues (RL.Cons name fieldType tailRowList) row fieldType
+  ) =>
+  FoldrValues (RL.Cons name fieldType tailRowList) row fieldType
   where
-    foldrValuesImpl _ f accum record = f value $ foldrValuesImpl tailProxy f accum record
-      where
-        tailProxy :: Proxy tailRowList
-        tailProxy = Proxy
+  foldrValuesImpl _ f accum record = f value $ foldrValuesImpl tailProxy f accum record
+    where
+    tailProxy :: Proxy tailRowList
+    tailProxy = Proxy
 
-        value :: fieldType
-        value = Record.get (Proxy :: Proxy name) record
+    value :: fieldType
+    value = Record.get (Proxy :: Proxy name) record
 
-instance foldrValuesNil
-  :: Homogeneous row fieldType
-  => FoldrValues RL.Nil row fieldType
+instance foldrValuesNil ::
+  Homogeneous row fieldType =>
+  FoldrValues RL.Nil row fieldType
   where
-    foldrValuesImpl _ _ accum _ = accum
+  foldrValuesImpl _ _ accum _ = accum
 

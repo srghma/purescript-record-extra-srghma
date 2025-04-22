@@ -31,17 +31,17 @@ foldMapValuesWithIndexR f = foldrValuesWithIndex (\key x acc -> acc <> f key x) 
 class
   ( Homogeneous row fieldType
   , HomogeneousRowList rowList fieldType
-  )
-  <= FoldrValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) fieldType
+  ) <=
+  FoldrValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
   where
-    foldrValuesWithIndexImpl
-      :: forall accum
-       . Proxy rowList
-      -> (String -> fieldType -> accum -> accum)
-      -> accum
-      -> Record row
-      -> accum
+  foldrValuesWithIndexImpl
+    :: forall accum
+     . Proxy rowList
+    -> (String -> fieldType -> accum -> accum)
+    -> accum
+    -> Record row
+    -> accum
 
 instance foldrValuesWithIndexCons ::
   ( FoldrValuesWithIndex tailRowList row fieldType
@@ -51,21 +51,22 @@ instance foldrValuesWithIndexCons ::
   , IsSymbol name
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
-  ) => FoldrValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
+  ) =>
+  FoldrValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
   where
-    foldrValuesWithIndexImpl _ f accum record = f key value $ foldrValuesWithIndexImpl tailProxy f accum record
-      where
-        tailProxy :: Proxy tailRowList
-        tailProxy = Proxy
+  foldrValuesWithIndexImpl _ f accum record = f key value $ foldrValuesWithIndexImpl tailProxy f accum record
+    where
+    tailProxy :: Proxy tailRowList
+    tailProxy = Proxy
 
-        value :: fieldType
-        value = Record.get (Proxy :: Proxy name) record
+    value :: fieldType
+    value = Record.get (Proxy :: Proxy name) record
 
-        key :: String
-        key = reflectSymbol (Proxy :: Proxy name)
+    key :: String
+    key = reflectSymbol (Proxy :: Proxy name)
 
-instance foldrValuesWithIndexNil
-  :: Homogeneous row fieldType
-  => FoldrValuesWithIndex RL.Nil row fieldType
+instance foldrValuesWithIndexNil ::
+  Homogeneous row fieldType =>
+  FoldrValuesWithIndex RL.Nil row fieldType
   where
-    foldrValuesWithIndexImpl _ _ accum _ = accum
+  foldrValuesWithIndexImpl _ _ accum _ = accum

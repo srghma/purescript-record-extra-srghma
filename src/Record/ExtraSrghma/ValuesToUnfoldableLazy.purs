@@ -25,5 +25,6 @@ valuesToUnfoldableLazy r = unfoldr (\(LazyTupleList f) -> f unit) lazyTupleList
 
 newtype LazyTupleList v =
   LazyTupleList (Unit -> Maybe (Tuple v (LazyTupleList v)))
+
 derive newtype instance lazyLazyTupleList :: Lazy.Lazy (LazyTupleList v)
 
