@@ -18,11 +18,11 @@ class
   traverseRecordImpl :: Record rowF -> Record rowA -> m (Builder { | from } { | to })
 
 -- Empty case
-instance traverseRecordNil :: Applicative m => TraverseRecord RL.Nil rowF rowA () () m where
+instance Applicative m => TraverseRecord RL.Nil rowF rowA () () m where
   traverseRecordImpl _ _ = pure identity
 
 -- Recursive case
-else instance traverseRecordCons ::
+else instance 
   ( IsSymbol name
   , Row.Cons name (a -> m b) trashF rowF
   , Row.Cons name a trashA rowA

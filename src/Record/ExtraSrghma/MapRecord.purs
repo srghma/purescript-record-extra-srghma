@@ -25,7 +25,7 @@ class
   | rowList -> row a b from to where
   mapRecordBuilder :: (a -> b) -> Record row -> Builder { | from } { | to }
 
-instance mapRecordCons ::
+instance
   ( IsSymbol name
   , Row.Cons name a trash row
   , MapRecord tail row a b from from'
@@ -41,5 +41,5 @@ instance mapRecordCons ::
     rest = mapRecordBuilder @tail f r
     first = Builder.insert nameP val
 
-instance mapRecordNil :: MapRecord RL.Nil row a b () () where
+instance MapRecord RL.Nil row a b () () where
   mapRecordBuilder _ _ = identity

@@ -33,7 +33,7 @@ class
   parSequenceRecordImpl :: Record inputRow -> parM (Builder { | accRow } { | resultRow })
 
 -- | Base case: When there's only one field left in the record
-instance singleFieldSequencer ::
+instance
   ( IsSymbol fieldName
   , Row.Cons fieldName (m fieldType) remainingFields inputRow
   , Parallel parM m
@@ -49,7 +49,7 @@ instance singleFieldSequencer ::
     parallelFieldValue = parallel $ Record.get fieldProxy record
 
 -- | Recursive case: Handle multiple fields in the record
-else instance multipleFieldsSequencer ::
+else instance
   ( IsSymbol fieldName
   , Row.Cons fieldName (m fieldType) remainingFields inputRow
   , ParSequenceRecord tailList inputRow accRow intermediateRow parM m
@@ -71,7 +71,7 @@ else instance multipleFieldsSequencer ::
     combineResults fieldValue restBuilder = Builder.insert fieldProxy fieldValue <<< restBuilder
 
 -- | Base case: Empty record
-instance emptyRecordSequencer ::
+instance
   ( Parallel parM m
   , Applicative parM
   ) =>

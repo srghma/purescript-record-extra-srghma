@@ -14,10 +14,10 @@ class AppendSubrecordImpl :: forall k. k -> Row Type -> Row Type -> Constraint
 class AppendSubrecordImpl rl bigger smaller where
   appendSubrecordImpl :: Record bigger -> Record smaller -> Record bigger
 
-instance appendSubrecordNil :: AppendSubrecordImpl RL.Nil bigger smaller where
+instance AppendSubrecordImpl RL.Nil bigger smaller where
   appendSubrecordImpl b _ = b
 
-instance appendSubrecordCons ::
+instance
   ( IsSymbol name
   , Row.Cons name t trash smaller
   , Row.Cons name t trash' bigger

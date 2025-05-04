@@ -28,11 +28,11 @@ class
     -> Builder { | resultRowAcc } { | resultRow }
 
 -- Base case: both records are empty
-instance zipRecordNil :: ZipRecord RL.Nil RL.Nil rowL rowR () () where
+instance ZipRecord RL.Nil RL.Nil rowL rowR () () where
   zipRecordImpl _ _ = identity
 
 -- Recursive case: zip head keys into Tuple, and recurse
-instance zipRecordCons ::
+instance
   ( IsSymbol key
   , Row.Cons key a restRowL rowL
   , Row.Cons key b restRowR rowR

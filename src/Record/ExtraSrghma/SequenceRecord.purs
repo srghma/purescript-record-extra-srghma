@@ -18,7 +18,7 @@ class
   sequenceRecordImpl :: Record row -> m (Builder { | from } { | to })
 
 -- Base case: single field in the row
-instance sequenceRecordSingle ::
+instance
   ( IsSymbol name
   , Row.Cons name (m ty) trash row
   , Functor m
@@ -33,7 +33,7 @@ instance sequenceRecordSingle ::
     valA = Record.get namep record
 
 -- Recursive case: process the tail of the record
-else instance sequenceRecordCons ::
+else instance
   ( IsSymbol name
   , Row.Cons name (m ty) trash row
   , Apply m
@@ -51,7 +51,7 @@ else instance sequenceRecordCons ::
     fn valA' rest' = Builder.insert namep valA' <<< rest'
 
 -- Base case: empty row, no fields to process
-instance sequenceRecordNil :: Applicative m => SequenceRecord RL.Nil row () () m where
+instance Applicative m => SequenceRecord RL.Nil row () () m where
   sequenceRecordImpl _ = pure identity
 
 -- User-facing function: build the sequence record

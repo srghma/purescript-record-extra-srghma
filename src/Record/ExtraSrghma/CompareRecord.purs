@@ -16,7 +16,7 @@ class
   compareRecordImpl :: Record row -> Record row -> Ordering
 
 -- | Compare two records by the current head field, and recurse on the tail if equal.
-instance ordRecordCons ::
+instance
   ( IsSymbol name
   , Ord ty
   , Row.Cons name ty trash row
@@ -33,7 +33,7 @@ instance ordRecordCons ::
     valB = Record.get namep b
 
 -- | Base case: comparing empty RowList always returns EQ.
-instance ordRecordNil :: OrdRecord RL.Nil row where
+instance OrdRecord RL.Nil row where
   compareRecordImpl _ _ = EQ
 
 -- | Public interface for comparing two records deterministically by their keys.

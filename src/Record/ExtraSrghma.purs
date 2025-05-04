@@ -13,7 +13,7 @@ import Record.ExtraSrghma.ZipRecord (class ZipRecord, zipRecord, zipRecordImpl) 
 import Record.ExtraSrghma.FoldrValuesLazy (class FoldrValuesLazy, foldMapValuesLazyR, foldrValuesLazy, foldrValuesLazyImpl) as Export
 import Record.ExtraSrghma.MapValuesWithIndex (class MapValuesWithIndex, mapValuesWithIndex, mapValuesWithIndexBuilder) as Export
 import Record.ExtraSrghma.SequenceRecord (class SequenceRecord, sequenceRecord, sequenceRecordImpl) as Export
-import Record.ExtraSrghma.Keys (class RecordKeys, class RowListKeys, pick, pickFn, recordKeys, recordKeys', rowKeys, rowKeys', rowListKeys, slistKeys, slistKeys') as Export
+import Record.ExtraSrghma.Keys (class RecordKeys, class RecordKeys1, class RowListKeys, class RowNonEmptyListKeys, pick, pickFn, recordKeys, recordKeys', recordKeys1, recordKeys1', rowKeys, rowKeys', rowKeys1, rowKeys1', rowListKeys, rowNonEmptyListKeys, slistKeys, slistKeys', slistKeys1, slistKeys1') as Export
 import Record.ExtraSrghma.AppendRecord (class AppendSubrecordImpl, appendRecord, appendSubrecordImpl) as Export
 import Record.ExtraSrghma.SList (class SListToRowList, type (:::), SCons, SList, SNil) as Export
 import Record.ExtraSrghma.ValuesToUnfoldableLazy (LazyTupleList(..), valuesToUnfoldableLazy) as Export

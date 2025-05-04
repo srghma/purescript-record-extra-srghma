@@ -24,7 +24,7 @@ class
   | rowList -> row a b from to where
   mapIndexBuilder :: (String -> b) -> Builder { | from } { | to }
 
-instance mapIndexCons ::
+instance
   ( IsSymbol name
   , Row.Cons name a trash row
   , MapIndex tail row a b from from'
@@ -40,5 +40,5 @@ instance mapIndexCons ::
     rest = mapIndexBuilder @tail f
     first = Builder.insert nameP val
 
-instance mapIndexNil :: MapIndex RL.Nil row a b () () where
+instance MapIndex RL.Nil row a b () () where
   mapIndexBuilder _ = identity

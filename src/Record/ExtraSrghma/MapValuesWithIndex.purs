@@ -40,7 +40,7 @@ class
   mapValuesWithIndexBuilder :: (String -> a -> b) -> Record row -> Builder { | from } { | to }
 
 -- | Instance for transforming a record with a non-empty field (i.e., head of the row list).
-instance mapValuesWithIndexField ::
+instance
   ( IsSymbol fieldName
   , Row.Cons fieldName a restRow row
   , MapValuesWithIndex tail row a b from from'
@@ -60,5 +60,5 @@ instance mapValuesWithIndexField ::
     applyTransformation = Builder.insert fieldProxy transformedValue
 
 -- | Base case: Empty record (i.e., no fields to transform).
-instance mapValuesWithIndexEmpty :: MapValuesWithIndex RL.Nil row a b () () where
+instance MapValuesWithIndex RL.Nil row a b () () where
   mapValuesWithIndexBuilder _ _ = identity
