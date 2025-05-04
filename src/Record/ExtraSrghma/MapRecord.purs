@@ -4,28 +4,26 @@ import Prelude
 
 import Record (get) as Record
 import Type.Prelude (class IsSymbol, Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Builder (Builder)
 import Record.Builder as Builder
-import Data.Tuple (Tuple(..))
 
 mapRecord
-  :: forall row xs a b row'
-   . RL.RowToList row xs
-  => MapRecord xs row a b () row'
+  :: forall row rowList a b row'
+   . RL.RowToList row rowList
+  => MapRecord rowList row a b () row'
   => (a -> b)
   -> Record row
   -> Record row'
 mapRecord f r = Builder.build builder {}
   where
-  builder = mapRecordBuilder (Proxy :: Proxy xs) f r
+  builder = mapRecordBuilder (Proxy :: Proxy rowList) f r
 
 class
-  MapRecord (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
-  | xs -> row a b from to where
-  mapRecordBuilder :: Proxy xs -> (a -> b) -> Record row -> Builder { | from } { | to }
+  MapRecord (rowList :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
+  | rowList -> row a b from to where
+  mapRecordBuilder :: Proxy rowList -> (a -> b) -> Record row -> Builder { | from } { | to }
 
 instance mapRecordCons ::
   ( IsSymbol name

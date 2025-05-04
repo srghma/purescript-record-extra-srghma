@@ -4,7 +4,6 @@ import Prelude
 
 import Record (get) as Record
 import Type.Prelude (class IsSymbol, Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 import Prim.Row as Row
 import Prim.RowList as RL
 
@@ -24,6 +23,7 @@ instance slToRlSCons ::
   ) =>
   SListToRowList (SCons name sTail) (RL.Cons name trash tail)
 
+class OrdRecord :: forall k. k -> Row Type -> Constraint
 class
   OrdRecord rl row
   | rl -> row

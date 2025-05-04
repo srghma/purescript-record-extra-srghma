@@ -10,63 +10,60 @@ import Record.Builder (Builder)
 import Record.Builder as Builder
 import Type.Prelude (class IsSymbol, Proxy(..))
 
+-- | Zips two records (with matching keys) into a single record of Tuple values.
 class
   ZipRecord
-    (rla :: RL.RowList Type)
-    (ra :: Row Type)
-    (rlb :: RL.RowList Type)
-    (rb :: Row Type)
-    (from :: Row Type)
-    (to :: Row Type)
-  | rla -> ra from to
-  , rlb -> rb from to
+    (rowListL :: RL.RowList Type)
+    (rowListR :: RL.RowList Type)
+    (rowL :: Row Type)
+    (rowR :: Row Type)
+    (resultRowAcc :: Row Type)
+    (resultRow :: Row Type)
+  | rowListL -> rowL resultRowAcc resultRow
+  , rowListR -> rowR resultRowAcc resultRow
   where
   zipRecordImpl
-    :: Proxy rla
-    -> Record ra
-    -> Proxy rlb
-    -> Record rb
-    -> Builder { | from } { | to }
+    :: Proxy rowListL
+    -> Proxy rowListR
+    -> Record rowL
+    -> Record rowR
+    -> Builder { | resultRowAcc } { | resultRow }
 
-instance zipRecordNil :: ZipRecord RL.Nil trashA RL.Nil trashB () ()
-  where
+-- Base case: both records are empty
+instance zipRecordNil :: ZipRecord RL.Nil RL.Nil rowL rowR () () where
   zipRecordImpl _ _ _ _ = identity
 
+-- Recursive case: zip head keys into Tuple, and recurse
 instance zipRecordCons ::
-  ( IsSymbol k
-  , Row.Cons k a trashA ra
-  , Row.Cons k b trashB rb
-  , Row.Cons k (Tuple a b) from' to
-  , Row.Lacks k from'
-  , ZipRecord ta ra tb rb from from'
+  ( IsSymbol key
+  , Row.Cons key a restRowL rowL
+  , Row.Cons key b restRowR rowR
+  , Row.Cons key (Tuple a b) resultTail resultRow
+  , Row.Lacks key resultTail
+  , ZipRecord tailL tailR rowL rowR resultRowAcc resultTail
   ) =>
   ZipRecord
-    (RL.Cons k a ta)
-    ra
-    (RL.Cons k b tb)
-    rb
-    from
-    to
+    (RL.Cons key a tailL)
+    (RL.Cons key b tailR)
+    rowL
+    rowR
+    resultRowAcc
+    resultRow
   where
-  zipRecordImpl _ ra _ rb = first <<< tail
+  zipRecordImpl _ _ recordL recordR =
+    Builder.insert key (Tuple (Record.get key recordL) (Record.get key recordR))
+      <<< zipRecordImpl (Proxy :: Proxy tailL) (Proxy :: Proxy tailR) recordL recordR
     where
-    name = Proxy :: Proxy k
-    head = Tuple (Record.get name ra) (Record.get name rb)
-    ta = Proxy :: Proxy ta
-    tb = Proxy :: Proxy tb
-    tail = zipRecordImpl ta ra tb rb
-    first = Builder.insert name head
+    key = Proxy :: Proxy key
 
+-- User-facing function: builds the zipped record
 zipRecord
-  :: forall ta ra tb rb rc
-   . RL.RowToList ra ta
-  => RL.RowToList rb tb
-  => ZipRecord ta ra tb rb () rc
-  => Record ra
-  -> Record rb
-  -> Record rc
-zipRecord ra rb = Builder.build builder {}
-  where
-  ta = Proxy :: Proxy ta
-  tb = Proxy :: Proxy tb
-  builder = zipRecordImpl ta ra tb rb
+  :: forall rowListL rowL rowListR rowR zippedRow
+   . RL.RowToList rowL rowListL
+  => RL.RowToList rowR rowListR
+  => ZipRecord rowListL rowListR rowL rowR () zippedRow
+  => Record rowL
+  -> Record rowR
+  -> Record zippedRow
+zipRecord recordL recordR =
+  Builder.build (zipRecordImpl (Proxy :: Proxy rowListL) (Proxy :: Proxy rowListR) recordL recordR) {}

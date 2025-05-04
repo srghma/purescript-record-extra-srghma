@@ -8,20 +8,21 @@ import Record.Builder (Builder)
 import Record.Builder as Builder
 
 mapIndex
-  :: forall row xs a b row'
-   . RL.RowToList row xs
-  => MapIndex xs row a b () row'
+  :: forall row rowList a b row'
+   . RL.RowToList row rowList
+  => MapIndex rowList row a b () row'
   => (String -> b)
   -> Proxy row
   -> Record row'
-mapIndex f rowProxy = Builder.build builder {}
+mapIndex f _ = Builder.build builder {}
   where
-  builder = mapIndexBuilder (Proxy :: Proxy xs) f
+  builder = mapIndexBuilder (Proxy :: Proxy rowList) f
 
+class MapIndex :: forall k. RL.RowList Type -> Row Type -> k -> Type -> Row Type -> Row Type -> Constraint
 class
-  MapIndex (xs :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
-  | xs -> row a b from to where
-  mapIndexBuilder :: Proxy xs -> (String -> b) -> Builder { | from } { | to }
+  MapIndex (rowList :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
+  | rowList -> row a b from to where
+  mapIndexBuilder :: Proxy rowList -> (String -> b) -> Builder { | from } { | to }
 
 instance mapIndexCons ::
   ( IsSymbol name

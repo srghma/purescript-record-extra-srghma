@@ -67,4 +67,3 @@ instance foldrValuesNil ::
   FoldrValues RL.Nil row fieldType
   where
   foldrValuesImpl _ _ accum _ = accum
-

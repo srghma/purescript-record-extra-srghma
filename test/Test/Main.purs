@@ -3,16 +3,16 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Cont.Trans (ContT(..), runContT)
+import Data.Array as Array
 import Data.List as List
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Class (liftEffect)
 import Effect.Timer (setTimeout)
 import Record.ExtraSrghma (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapRecord, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy, zipRecord)
-import Test.Spec (Spec, describe, it)
+import Test.Spec (describe, it)
 import Test.Spec.Assertions (shouldEqual)
 import Test.Spec.Reporter.Console (consoleReporter)
-import Test.Spec.Runner (runSpec)
 import Test.Spec.Runner.Node (runSpecAndExitProcess)
 import Type.Prelude (Proxy(..))
 
@@ -94,3 +94,16 @@ main = runSpecAndExitProcess [ consoleReporter ] do
           result = zipRecord recordA recordB
 
         result `shouldEqual` expected
+
+    describe "Record.ExtraSrghma.ValuesToUnfoldableLazy" do
+      let
+        testRecord :: { a :: Int, b :: Int, c :: Int }
+        testRecord = { a: 1, b: 2, c: 3 }
+
+      it "converts record values to Array" do
+        let result = valuesToUnfoldableLazy testRecord :: Array Int
+        Array.sort result `shouldEqual` [ 1, 2, 3 ]
+
+      it "converts record values to List" do
+        let result = valuesToUnfoldableLazy testRecord :: List.List Int
+        List.sort result `shouldEqual` List.fromFoldable [ 1, 2, 3 ]

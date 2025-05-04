@@ -9,8 +9,8 @@ import Prim.Row as Row
 import Prim.RowList as RL
 import Type.Prelude (class IsSymbol, Proxy(..), reflectSymbol)
 
-class Keys (xs :: RL.RowList Type) where
-  keysImpl :: Proxy xs -> List String
+class Keys (rowList :: RL.RowList Type) where
+  keysImpl :: Proxy rowList -> List String
 
 instance nilKeys :: Keys RL.Nil where
   keysImpl _ = mempty

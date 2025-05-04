@@ -12,11 +12,12 @@ import Type.Prelude (class IsSymbol, Proxy(..))
 class SequenceRecord :: forall k. k -> Row Type -> Row Type -> Row Type -> (Type -> Type) -> Constraint
 class
   Functor m <=
-  SequenceRecord rl row from to m
-  | rl -> row from to m
+  SequenceRecord rowList row from to m
+  | rowList -> row from to m
   where
-  sequenceRecordImpl :: Proxy rl -> Record row -> m (Builder { | from } { | to })
+  sequenceRecordImpl :: Proxy rowList -> Record row -> m (Builder { | from } { | to })
 
+-- Base case: single field in the row
 instance sequenceRecordSingle ::
   ( IsSymbol name
   , Row.Cons name (m ty) trash row
@@ -25,12 +26,13 @@ instance sequenceRecordSingle ::
   , Row.Cons name ty () to
   ) =>
   SequenceRecord (RL.Cons name (m ty) RL.Nil) row () to m where
-  sequenceRecordImpl _ a =
+  sequenceRecordImpl _ record =
     Builder.insert namep <$> valA
     where
     namep = Proxy :: Proxy name
-    valA = Record.get namep a
+    valA = Record.get namep record
 
+-- Recursive case: process the tail of the record
 else instance sequenceRecordCons ::
   ( IsSymbol name
   , Row.Cons name (m ty) trash row
@@ -40,24 +42,26 @@ else instance sequenceRecordCons ::
   , Row.Cons name ty from' to
   ) =>
   SequenceRecord (RL.Cons name (m ty) tail) row from to m where
-  sequenceRecordImpl _ a =
+  sequenceRecordImpl _ record =
     fn <$> valA <*> rest
     where
     namep = Proxy :: Proxy name
-    valA = Record.get namep a
+    valA = Record.get namep record
     tailp = Proxy :: Proxy tail
-    rest = sequenceRecordImpl tailp a
+    rest = sequenceRecordImpl tailp record
     fn valA' rest' = Builder.insert namep valA' <<< rest'
 
+-- Base case: empty row, no fields to process
 instance sequenceRecordNil :: Applicative m => SequenceRecord RL.Nil row () () m where
   sequenceRecordImpl _ _ = pure identity
 
+-- User-facing function: build the sequence record
 sequenceRecord
-  :: forall row row' rl m
-   . RL.RowToList row rl
-  => SequenceRecord rl row () row' m
+  :: forall row row' rowList m
+   . RL.RowToList row rowList
+  => SequenceRecord rowList row () row' m
   => Record row
   -> m (Record row')
-sequenceRecord a = Builder.build <@> {} <$> builder
+sequenceRecord record = Builder.build <@> {} <$> builder
   where
-  builder = sequenceRecordImpl (Proxy :: Proxy rl) a
+  builder = sequenceRecordImpl (Proxy :: Proxy rowList) record

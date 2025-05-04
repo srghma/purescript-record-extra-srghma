@@ -9,22 +9,26 @@ import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (class Unfoldable, unfoldr)
 
+-- | A lazy unfoldable wrapper for converting record values into a sequential structure.
+newtype LazyTupleList a =
+  LazyTupleList (Unit -> Maybe (Tuple a (LazyTupleList a)))
+
+derive newtype instance Lazy.Lazy (LazyTupleList a)
+
+-- | Converts a record of values into any `Unfoldable` container, lazily.
+--
+-- This avoids evaluating all fields immediately — only what's needed to build the result.
 valuesToUnfoldableLazy
-  :: forall r fields f v
-   . RL.RowToList r fields
-  => FoldrValuesLazy fields r v
-  => Unfoldable f
-  => Record r
-  -> f v
-valuesToUnfoldableLazy r = unfoldr (\(LazyTupleList f) -> f unit) lazyTupleList
+  :: forall row rowList container value
+   . RL.RowToList row rowList
+  => FoldrValuesLazy rowList row value
+  => Unfoldable container
+  => Record row
+  -> container value
+valuesToUnfoldableLazy record =
+  unfoldr (\(LazyTupleList next) -> next unit) stream
   where
-  lazyTupleList = foldrValuesLazy
-    (\v f -> (LazyTupleList \_ -> Just (Tuple v f)))
+  stream = foldrValuesLazy
+    (\value acc -> LazyTupleList (\_ -> Just (Tuple value acc)))
     (LazyTupleList (\_ -> Nothing))
-    r
-
-newtype LazyTupleList v =
-  LazyTupleList (Unit -> Maybe (Tuple v (LazyTupleList v)))
-
-derive newtype instance lazyLazyTupleList :: Lazy.Lazy (LazyTupleList v)
-
+    record
