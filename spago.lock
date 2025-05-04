@@ -5,17 +5,39 @@
         "path": "./",
         "core": {
           "dependencies": [
-            "arrays",
-            "control",
-            "functions",
-            "lists",
-            "maybe",
-            "parallel",
-            "prelude",
-            "record",
-            "tuples",
-            "typelevel-prelude",
-            "unfoldable"
+            {
+              "arrays": ">=7.3.0 <8.0.0"
+            },
+            {
+              "control": ">=6.0.0 <7.0.0"
+            },
+            {
+              "functions": ">=6.0.0 <7.0.0"
+            },
+            {
+              "lists": ">=7.0.0 <8.0.0"
+            },
+            {
+              "maybe": ">=6.0.0 <7.0.0"
+            },
+            {
+              "parallel": ">=7.0.0 <8.0.0"
+            },
+            {
+              "prelude": ">=6.0.2 <7.0.0"
+            },
+            {
+              "record": ">=4.0.0 <5.0.0"
+            },
+            {
+              "tuples": ">=7.0.0 <8.0.0"
+            },
+            {
+              "typelevel-prelude": ">=7.0.0 <8.0.0"
+            },
+            {
+              "unfoldable": ">=6.0.0 <7.0.0"
+            }
           ],
           "build_plan": [
             "arrays",
@@ -59,8 +81,6 @@
         "test": {
           "dependencies": [
             "arrays",
-            "assert",
-            "console",
             "control",
             "effect",
             "functions",
@@ -70,8 +90,8 @@
             "parallel",
             "prelude",
             "record",
+            "spec",
             "spec-discovery",
-            "spec-node",
             "transformers",
             "tuples",
             "typelevel-prelude",
@@ -84,7 +104,6 @@
             "argonaut-core",
             "arraybuffer-types",
             "arrays",
-            "assert",
             "avar",
             "bifunctors",
             "catenable-lists",
@@ -793,16 +812,6 @@
         "tuples",
         "unfoldable",
         "unsafe-coerce"
-      ]
-    },
-    "assert": {
-      "type": "registry",
-      "version": "6.0.0",
-      "integrity": "sha256-hCSYcCw9kj3qujoDcriWhCdmrpPZoguSPDZhEMnTl3A=",
-      "dependencies": [
-        "console",
-        "effect",
-        "prelude"
       ]
     },
     "avar": {

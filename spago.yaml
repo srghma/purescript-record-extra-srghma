@@ -2,32 +2,28 @@ package:
   name: record-extra-srghma
   publish:
     license: Apache-2.0
-    version: 0.1.0
+    version: 0.2.0
     location:
       githubOwner: srghma
       githubRepo: purescript-record-extra-srghma
   dependencies:
-    - arrays
-    - control
-    - functions
-    - lists
-    - maybe
-    - parallel
-    - prelude
-    - record
-    - tuples
-    - typelevel-prelude
-    - unfoldable
+    - arrays: ">=7.3.0 <8.0.0"
+    - control: ">=6.0.0 <7.0.0"
+    - functions: ">=6.0.0 <7.0.0"
+    - lists: ">=7.0.0 <8.0.0"
+    - maybe: ">=6.0.0 <7.0.0"
+    - parallel: ">=7.0.0 <8.0.0"
+    - prelude: ">=6.0.2 <7.0.0"
+    - record: ">=4.0.0 <5.0.0"
+    - tuples: ">=7.0.0 <8.0.0"
+    - typelevel-prelude: ">=7.0.0 <8.0.0"
+    - unfoldable: ">=6.0.0 <7.0.0"
   test:
     main: Test.Main
     dependencies:
-      - spec-discovery
-      - spec-node
-      - console
-      - effect
       - arrays
-      - assert
       - control
+      - effect
       - functions
       - js-timers
       - lists
@@ -35,6 +31,8 @@ package:
       - parallel
       - prelude
       - record
+      - spec
+      - spec-discovery
       - transformers
       - tuples
       - typelevel-prelude
