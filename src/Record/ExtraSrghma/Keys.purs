@@ -10,28 +10,27 @@ import Prim.RowList as RL
 import Type.Prelude (class IsSymbol, Proxy(..), reflectSymbol)
 
 class Keys (rowList :: RL.RowList Type) where
-  keysImpl :: Proxy rowList -> List String
+  keysImpl :: List String
 
 instance nilKeys :: Keys RL.Nil where
-  keysImpl _ = mempty
+  keysImpl = mempty
 
 instance consKeys ::
   ( IsSymbol name
   , Keys tail
   ) =>
   Keys (RL.Cons name ty tail) where
-  keysImpl _ = first : rest
+  keysImpl = first : rest
     where
     first = reflectSymbol (Proxy :: Proxy name)
-    rest = keysImpl (Proxy :: Proxy tail)
+    rest = keysImpl @tail
 
 keys
-  :: forall g row rl
+  :: forall @row rl
    . RL.RowToList row rl
   => Keys rl
-  => g row -- this will work for any type with the row as a param!
-  -> List String
-keys _ = keysImpl (Proxy :: Proxy rl)
+  => List String
+keys = keysImpl @rl
 
 foreign import pickFn :: forall r1 r2. Fn2 (Array String) (Record r1) (Record r2)
 
@@ -44,12 +43,11 @@ pick
   -> Record b
 pick = runFn2 pickFn ks
   where
-  ks = fromFoldable $ keys (Proxy :: Proxy b)
+  ks = fromFoldable $ keys @b
 
 slistKeys
-  :: forall g tuples rl
+  :: forall @tuples rl
    . SListToRowList tuples rl
   => Keys rl
-  => g tuples
-  -> List String
-slistKeys _ = keysImpl (Proxy :: Proxy rl)
+  => List String
+slistKeys = keysImpl @rl

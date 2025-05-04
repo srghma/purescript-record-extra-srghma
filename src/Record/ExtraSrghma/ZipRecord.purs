@@ -23,15 +23,13 @@ class
   , rowListR -> rowR resultRowAcc resultRow
   where
   zipRecordImpl
-    :: Proxy rowListL
-    -> Proxy rowListR
-    -> Record rowL
+    :: Record rowL
     -> Record rowR
     -> Builder { | resultRowAcc } { | resultRow }
 
 -- Base case: both records are empty
 instance zipRecordNil :: ZipRecord RL.Nil RL.Nil rowL rowR () () where
-  zipRecordImpl _ _ _ _ = identity
+  zipRecordImpl _ _ = identity
 
 -- Recursive case: zip head keys into Tuple, and recurse
 instance zipRecordCons ::
@@ -50,11 +48,11 @@ instance zipRecordCons ::
     resultRowAcc
     resultRow
   where
-  zipRecordImpl _ _ recordL recordR =
-    Builder.insert key (Tuple (Record.get key recordL) (Record.get key recordR))
-      <<< zipRecordImpl (Proxy :: Proxy tailL) (Proxy :: Proxy tailR) recordL recordR
-    where
-    key = Proxy :: Proxy key
+  zipRecordImpl recordL recordR =
+    Builder.insert
+      (Proxy :: Proxy key)
+      (Tuple (Record.get (Proxy :: Proxy key) recordL) (Record.get (Proxy :: Proxy key) recordR))
+      <<< zipRecordImpl @tailL @tailR recordL recordR
 
 -- User-facing function: builds the zipped record
 zipRecord
@@ -66,4 +64,4 @@ zipRecord
   -> Record rowR
   -> Record zippedRow
 zipRecord recordL recordR =
-  Builder.build (zipRecordImpl (Proxy :: Proxy rowListL) (Proxy :: Proxy rowListR) recordL recordR) {}
+  Builder.build (zipRecordImpl @rowListL @rowListR recordL recordR) {}

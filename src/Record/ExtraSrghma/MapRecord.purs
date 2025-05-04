@@ -18,12 +18,12 @@ mapRecord
   -> Record row'
 mapRecord f r = Builder.build builder {}
   where
-  builder = mapRecordBuilder (Proxy :: Proxy rowList) f r
+  builder = mapRecordBuilder @rowList f r
 
 class
   MapRecord (rowList :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | rowList -> row a b from to where
-  mapRecordBuilder :: Proxy rowList -> (a -> b) -> Record row -> Builder { | from } { | to }
+  mapRecordBuilder :: (a -> b) -> Record row -> Builder { | from } { | to }
 
 instance mapRecordCons ::
   ( IsSymbol name
@@ -33,13 +33,13 @@ instance mapRecordCons ::
   , Row.Cons name b from' to
   ) =>
   MapRecord (RL.Cons name a tail) row a b from to where
-  mapRecordBuilder _ f r =
+  mapRecordBuilder f r =
     first <<< rest
     where
     nameP = Proxy :: Proxy name
     val = f $ Record.get nameP r
-    rest = mapRecordBuilder (Proxy :: Proxy tail) f r
+    rest = mapRecordBuilder @tail f r
     first = Builder.insert nameP val
 
 instance mapRecordNil :: MapRecord RL.Nil row a b () () where
-  mapRecordBuilder _ _ _ = identity
+  mapRecordBuilder _ _ = identity

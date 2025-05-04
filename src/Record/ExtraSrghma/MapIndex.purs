@@ -16,13 +16,13 @@ mapIndex
   -> Record row'
 mapIndex f _ = Builder.build builder {}
   where
-  builder = mapIndexBuilder (Proxy :: Proxy rowList) f
+  builder = mapIndexBuilder @rowList f
 
 class MapIndex :: forall k. RL.RowList Type -> Row Type -> k -> Type -> Row Type -> Row Type -> Constraint
 class
   MapIndex (rowList :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | rowList -> row a b from to where
-  mapIndexBuilder :: Proxy rowList -> (String -> b) -> Builder { | from } { | to }
+  mapIndexBuilder :: (String -> b) -> Builder { | from } { | to }
 
 instance mapIndexCons ::
   ( IsSymbol name
@@ -32,13 +32,13 @@ instance mapIndexCons ::
   , Row.Cons name b from' to
   ) =>
   MapIndex (RL.Cons name a tail) row a b from to where
-  mapIndexBuilder _ f =
+  mapIndexBuilder f =
     first <<< rest
     where
     nameP = Proxy :: Proxy name
     val = f (reflectSymbol nameP)
-    rest = mapIndexBuilder (Proxy :: Proxy tail) f
+    rest = mapIndexBuilder @tail f
     first = Builder.insert nameP val
 
 instance mapIndexNil :: MapIndex RL.Nil row a b () () where
-  mapIndexBuilder _ _ = identity
+  mapIndexBuilder _ = identity

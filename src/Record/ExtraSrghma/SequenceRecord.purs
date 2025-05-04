@@ -15,7 +15,7 @@ class
   SequenceRecord rowList row from to m
   | rowList -> row from to m
   where
-  sequenceRecordImpl :: Proxy rowList -> Record row -> m (Builder { | from } { | to })
+  sequenceRecordImpl :: Record row -> m (Builder { | from } { | to })
 
 -- Base case: single field in the row
 instance sequenceRecordSingle ::
@@ -26,7 +26,7 @@ instance sequenceRecordSingle ::
   , Row.Cons name ty () to
   ) =>
   SequenceRecord (RL.Cons name (m ty) RL.Nil) row () to m where
-  sequenceRecordImpl _ record =
+  sequenceRecordImpl record =
     Builder.insert namep <$> valA
     where
     namep = Proxy :: Proxy name
@@ -42,18 +42,17 @@ else instance sequenceRecordCons ::
   , Row.Cons name ty from' to
   ) =>
   SequenceRecord (RL.Cons name (m ty) tail) row from to m where
-  sequenceRecordImpl _ record =
+  sequenceRecordImpl record =
     fn <$> valA <*> rest
     where
     namep = Proxy :: Proxy name
     valA = Record.get namep record
-    tailp = Proxy :: Proxy tail
-    rest = sequenceRecordImpl tailp record
+    rest = sequenceRecordImpl @tail record
     fn valA' rest' = Builder.insert namep valA' <<< rest'
 
 -- Base case: empty row, no fields to process
 instance sequenceRecordNil :: Applicative m => SequenceRecord RL.Nil row () () m where
-  sequenceRecordImpl _ _ = pure identity
+  sequenceRecordImpl _ = pure identity
 
 -- User-facing function: build the sequence record
 sequenceRecord
@@ -64,4 +63,4 @@ sequenceRecord
   -> m (Record row')
 sequenceRecord record = Builder.build <@> {} <$> builder
   where
-  builder = sequenceRecordImpl (Proxy :: Proxy rowList) record
+  builder = sequenceRecordImpl @rowList record

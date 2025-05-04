@@ -16,7 +16,7 @@ foldrValuesWithIndex
   -> accum
   -> Record row
   -> accum
-foldrValuesWithIndex = foldrValuesWithIndexImpl (Proxy :: Proxy rowList)
+foldrValuesWithIndex = foldrValuesWithIndexImpl @rowList
 
 foldMapValuesWithIndexR
   :: forall accum row fieldType rowList
@@ -37,8 +37,7 @@ class
   where
   foldrValuesWithIndexImpl
     :: forall accum
-     . Proxy rowList
-    -> (String -> fieldType -> accum -> accum)
+     . (String -> fieldType -> accum -> accum)
     -> accum
     -> Record row
     -> accum
@@ -54,11 +53,8 @@ instance foldrValuesWithIndexCons ::
   ) =>
   FoldrValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldrValuesWithIndexImpl _ f accum record = f key value $ foldrValuesWithIndexImpl tailProxy f accum record
+  foldrValuesWithIndexImpl f accum record = f key value $ foldrValuesWithIndexImpl @tailRowList f accum record
     where
-    tailProxy :: Proxy tailRowList
-    tailProxy = Proxy
-
     value :: fieldType
     value = Record.get (Proxy :: Proxy name) record
 
@@ -69,4 +65,4 @@ instance foldrValuesWithIndexNil ::
   Homogeneous row fieldType =>
   FoldrValuesWithIndex RL.Nil row fieldType
   where
-  foldrValuesWithIndexImpl _ _ accum _ = accum
+  foldrValuesWithIndexImpl _ accum _ = accum

@@ -28,7 +28,7 @@ class
   OrdRecord rl row
   | rl -> row
   where
-  compareRecordImpl :: Proxy rl -> Record row -> Record row -> Ordering
+  compareRecordImpl :: Record row -> Record row -> Ordering
 
 instance ordRecordCons ::
   ( IsSymbol name
@@ -37,18 +37,17 @@ instance ordRecordCons ::
   , OrdRecord tail row
   ) =>
   OrdRecord (RL.Cons name ty tail) row where
-  compareRecordImpl _ a b =
+  compareRecordImpl a b =
     case compare valA valB of
-      EQ -> compareRecordImpl tailp a b
+      EQ -> compareRecordImpl @tail a b
       ordering -> ordering
     where
     namep = Proxy :: Proxy name
     valA = Record.get namep a
     valB = Record.get namep b
-    tailp = Proxy :: Proxy tail
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
-  compareRecordImpl _ _ _ = EQ
+  compareRecordImpl _ _ = EQ
 
 compareRecord
   :: forall row rl
@@ -57,4 +56,4 @@ compareRecord
   => Record row
   -> Record row
   -> Ordering
-compareRecord a b = compareRecordImpl (Proxy :: Proxy rl) a b
+compareRecord a b = compareRecordImpl @rl a b

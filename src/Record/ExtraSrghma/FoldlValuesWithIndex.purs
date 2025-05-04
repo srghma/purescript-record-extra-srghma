@@ -16,7 +16,7 @@ foldlValuesWithIndex
   -> accum
   -> Record row
   -> accum
-foldlValuesWithIndex = foldlValuesWithIndexImpl (Proxy :: Proxy rowList)
+foldlValuesWithIndex = foldlValuesWithIndexImpl @rowList
 
 foldMapValuesWithIndexL
   :: forall accum row fieldType rowList
@@ -37,8 +37,7 @@ class
   where
   foldlValuesWithIndexImpl
     :: forall accum
-     . Proxy rowList
-    -> (accum -> String -> fieldType -> accum)
+     . (accum -> String -> fieldType -> accum)
     -> accum
     -> Record row
     -> accum
@@ -54,11 +53,8 @@ instance foldlValuesWithIndexCons ::
   ) =>
   FoldlValuesWithIndex (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldlValuesWithIndexImpl _ f accum record = foldlValuesWithIndexImpl tailProxy f accum' record
+  foldlValuesWithIndexImpl f accum record = foldlValuesWithIndexImpl @tailRowList f accum' record
     where
-    tailProxy :: Proxy tailRowList
-    tailProxy = Proxy
-
     value :: fieldType
     value = Record.get (Proxy :: Proxy name) record
 
@@ -71,4 +67,4 @@ instance foldlValuesWithIndexNil ::
   Homogeneous row fieldType =>
   FoldlValuesWithIndex RL.Nil row fieldType
   where
-  foldlValuesWithIndexImpl _ _ accum _ = accum
+  foldlValuesWithIndexImpl _ accum _ = accum

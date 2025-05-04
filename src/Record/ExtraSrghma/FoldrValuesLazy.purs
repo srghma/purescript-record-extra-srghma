@@ -18,7 +18,7 @@ foldrValuesLazy
   -> accum
   -> Record row
   -> accum
-foldrValuesLazy = foldrValuesLazyImpl (Proxy :: Proxy rowList)
+foldrValuesLazy = foldrValuesLazyImpl @rowList
 
 foldMapValuesLazyR
   :: forall accum row fieldType rowList
@@ -41,8 +41,7 @@ class
   foldrValuesLazyImpl
     :: forall accum
      . Lazy.Lazy accum
-    => Proxy rl
-    -> (fieldType -> accum -> accum)
+    => (fieldType -> accum -> accum)
     -> accum
     -> Record row
     -> accum
@@ -58,12 +57,9 @@ instance foldrValuesLazyCons ::
   ) =>
   FoldrValuesLazy (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldrValuesLazyImpl _ f accum record = Lazy.defer \_ ->
-    f value $ foldrValuesLazyImpl tailProxy f accum record
+  foldrValuesLazyImpl f accum record = Lazy.defer \_ ->
+    f value $ foldrValuesLazyImpl @tailRowList f accum record
     where
-    tailProxy :: Proxy tailRowList
-    tailProxy = Proxy
-
     value :: fieldType
     value = Record.get (Proxy :: Proxy name) record
 
@@ -71,4 +67,4 @@ instance foldrValuesLazyNil ::
   Homogeneous row fieldType =>
   FoldrValuesLazy RL.Nil row fieldType
   where
-  foldrValuesLazyImpl _ _ accum _ = accum
+  foldrValuesLazyImpl _ accum _ = accum

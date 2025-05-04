@@ -21,7 +21,7 @@ parSequenceRecord
   -> m (Record outputRow)
 parSequenceRecord record = sequential $ Builder.build <@> {} <$> builderAction
   where
-  builderAction = parSequenceRecordImpl (Proxy :: Proxy rowList) record
+  builderAction = parSequenceRecordImpl @rowList record
 
 -- | Class for sequencing a record of monadic values in parallel
 class ParSequenceRecord :: forall k. k -> Row Type -> Row Type -> Row Type -> (Type -> Type) -> (Type -> Type) -> Constraint
@@ -30,7 +30,7 @@ class
   ParSequenceRecord rowList inputRow accRow resultRow parM m
   | rowList -> inputRow accRow resultRow parM m
   where
-  parSequenceRecordImpl :: Proxy rowList -> Record inputRow -> parM (Builder { | accRow } { | resultRow })
+  parSequenceRecordImpl :: Record inputRow -> parM (Builder { | accRow } { | resultRow })
 
 -- | Base case: When there's only one field left in the record
 instance singleFieldSequencer ::
@@ -41,7 +41,7 @@ instance singleFieldSequencer ::
   , Row.Cons fieldName fieldType () resultRow
   ) =>
   ParSequenceRecord (RL.Cons fieldName (m fieldType) RL.Nil) inputRow () resultRow parM m where
-  parSequenceRecordImpl _ record = Builder.insert fieldProxy <$> parallelFieldValue
+  parSequenceRecordImpl record = Builder.insert fieldProxy <$> parallelFieldValue
     where
     fieldProxy = Proxy :: Proxy fieldName
 
@@ -57,17 +57,15 @@ else instance multipleFieldsSequencer ::
   , Row.Cons fieldName fieldType intermediateRow resultRow
   ) =>
   ParSequenceRecord (RL.Cons fieldName (m fieldType) tailList) inputRow accRow resultRow parM m where
-  parSequenceRecordImpl _ record = combineResults <$> parallelFieldValue <*> restOfFields
+  parSequenceRecordImpl record = combineResults <$> parallelFieldValue <*> restOfFields
     where
     fieldProxy = Proxy :: Proxy fieldName
 
     parallelFieldValue :: parM fieldType
     parallelFieldValue = parallel $ Record.get fieldProxy record
 
-    tailProxy = Proxy :: Proxy tailList
-
     restOfFields :: parM (Builder (Record accRow) (Record intermediateRow))
-    restOfFields = parSequenceRecordImpl tailProxy record
+    restOfFields = parSequenceRecordImpl @tailList record
 
     combineResults :: fieldType -> Builder (Record accRow) (Record intermediateRow) -> Builder (Record accRow) (Record resultRow)
     combineResults fieldValue restBuilder = Builder.insert fieldProxy fieldValue <<< restBuilder
@@ -78,4 +76,4 @@ instance emptyRecordSequencer ::
   , Applicative parM
   ) =>
   ParSequenceRecord RL.Nil inputRow () () parM m where
-  parSequenceRecordImpl _ _ = pure identity
+  parSequenceRecordImpl _ = pure identity

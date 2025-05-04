@@ -30,14 +30,14 @@ mapValuesWithIndex
   -> Record row'
 mapValuesWithIndex transform record = Builder.build builder {}
   where
-  builder = mapValuesWithIndexBuilder (Proxy :: Proxy rowList) transform record
+  builder = mapValuesWithIndexBuilder @rowList transform record
 
 -- | Type class for transforming record values based on field names and values.
 class
   MapValuesWithIndex (rowList :: RL.RowList Type) (row :: Row Type) a b (from :: Row Type) (to :: Row Type)
   | rowList -> row a b from to where
   -- | The implementation for mapping over the record's values with the field name.
-  mapValuesWithIndexBuilder :: Proxy rowList -> (String -> a -> b) -> Record row -> Builder { | from } { | to }
+  mapValuesWithIndexBuilder :: (String -> a -> b) -> Record row -> Builder { | from } { | to }
 
 -- | Instance for transforming a record with a non-empty field (i.e., head of the row list).
 instance mapValuesWithIndexField ::
@@ -48,17 +48,17 @@ instance mapValuesWithIndexField ::
   , Row.Cons fieldName b from' to
   ) =>
   MapValuesWithIndex (RL.Cons fieldName a tail) row a b from to where
-  mapValuesWithIndexBuilder _ transform record =
+  mapValuesWithIndexBuilder transform record =
     applyTransformation <<< restTransformation
     where
     fieldProxy = Proxy :: Proxy fieldName
     -- Apply the transformation function using the field name and value
     transformedValue = transform (reflectSymbol fieldProxy) (Record.get fieldProxy record)
     -- Recurse for the rest of the fields in the record
-    restTransformation = mapValuesWithIndexBuilder (Proxy :: Proxy tail) transform record
+    restTransformation = mapValuesWithIndexBuilder @tail transform record
     -- Insert the transformed field value into the record
     applyTransformation = Builder.insert fieldProxy transformedValue
 
 -- | Base case: Empty record (i.e., no fields to transform).
 instance mapValuesWithIndexEmpty :: MapValuesWithIndex RL.Nil row a b () () where
-  mapValuesWithIndexBuilder _ _ _ = identity
+  mapValuesWithIndexBuilder _ _ = identity
