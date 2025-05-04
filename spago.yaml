@@ -21,6 +21,7 @@ package:
   test:
     main: Test.Main
     dependencies:
+      - spec-node
       - console
       - effect
       - arrays
@@ -40,4 +41,4 @@ package:
 workspace:
   extraPackages: {}
   packageSet:
-    registry: 64.2.0
+    registry: 64.6.1

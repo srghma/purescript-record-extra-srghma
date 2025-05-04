@@ -3,13 +3,18 @@ module Test.Main where
 import Prelude
 
 import Control.Monad.Cont.Trans (ContT(..), runContT)
-import Effect (Effect)
-import Effect.Console (logShow)
-import Effect.Timer (setTimeout)
-import Record.ExtraSrghma (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapRecord, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy)
-import Test.Assert (assert')
-import Type.Prelude (Proxy(..))
 import Data.List as List
+import Data.Tuple (Tuple(..))
+import Effect (Effect)
+import Effect.Class (liftEffect)
+import Effect.Timer (setTimeout)
+import Record.ExtraSrghma (foldlValues, foldlValuesWithIndex, foldrValues, foldrValuesLazy, foldrValuesWithIndex, mapIndex, mapRecord, mapValuesWithIndex, parSequenceRecord, valuesToUnfoldableLazy, zipRecord)
+import Test.Spec (Spec, describe, it)
+import Test.Spec.Assertions (shouldEqual)
+import Test.Spec.Reporter.Console (consoleReporter)
+import Test.Spec.Runner (runSpec)
+import Test.Spec.Runner.Node (runSpecAndExitProcess)
+import Type.Prelude (Proxy(..))
 
 type WithoutVals :: forall k. k -> Row k
 type WithoutVals type_ =
@@ -23,51 +28,69 @@ type Reqs type_ =
   }
 
 main :: Effect Unit
-main = do
-  assert' "foldlValues" $
-    foldlValues (+) 0 { a: 1, b: 2, c: 3 } == 6
+main = runSpecAndExitProcess [ consoleReporter ] do
+  describe "Record.ExtraSrghma" do
+    it "foldlValues" do
+      foldlValues (+) 0 { a: 1, b: 2, c: 3 } `shouldEqual` 6
 
-  assert' "foldlValuesWithIndex" $
-    foldlValuesWithIndex (\acc key val -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 } == "a1b2c3"
+    it "foldlValuesWithIndex" do
+      foldlValuesWithIndex (\acc key val -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 }
+        `shouldEqual` "a1b2c3"
 
-  assert' "foldrValues" $
-    foldrValues (+) 0 { a: 1, b: 2, c: 3 } == 6
+    it "foldrValues" do
+      foldrValues (+) 0 { a: 1, b: 2, c: 3 } `shouldEqual` 6
 
-  assert' "foldrValuesLazy" $
-    let
-      record = { a: \_ -> 1, b: \_ -> 2, c: \_ -> 3 }
-      (result :: Unit -> Int) = foldrValuesLazy (\field accum -> \_ -> field unit + accum unit) (\_ -> 0) record
-    in
-      result unit == 6
+    it "foldrValuesLazy" do
+      let
+        record = { a: \_ -> 1, b: \_ -> 2, c: \_ -> 3 }
+        result = foldrValuesLazy (\field accum -> \_ -> field unit + accum unit) (\_ -> 0) record
+      result unit `shouldEqual` 6
 
-  assert' "foldrValuesWithIndex" $
-    foldrValuesWithIndex (\key val acc -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 } == "c3b2a1"
+    it "foldrValuesWithIndex" do
+      foldrValuesWithIndex (\key val acc -> acc <> key <> show val) "" { a: 1, b: 2, c: 3 }
+        `shouldEqual` "c3b2a1"
 
-  assert' "valuesToUnfoldableLazy" $
-    valuesToUnfoldableLazy { a: 1, b: 2, c: 3 } == List.fromFoldable [ 1, 2, 3 ]
+    it "valuesToUnfoldableLazy" do
+      valuesToUnfoldableLazy { a: 1, b: 2, c: 3 }
+        `shouldEqual` List.fromFoldable [ 1, 2, 3 ]
 
-  assert' "mapIndex" $
-    mapIndex (\key -> key) (Proxy :: forall type_. Proxy (WithoutVals type_)) == { a: "a", b: "b" }
+    it "mapIndex" do
+      mapIndex (\key -> key) (Proxy :: forall type_. Proxy (WithoutVals type_))
+        `shouldEqual` { a: "a", b: "b" }
 
-  assert' "mapValuesWithIndex" $
-    mapValuesWithIndex (\key val -> key <> show val) { a: 1, b: 2, c: 3 } == { a: "a1", b: "b2", c: "c3" }
+    it "mapValuesWithIndex" do
+      mapValuesWithIndex (\key val -> key <> show val) { a: 1, b: 2, c: 3 }
+        `shouldEqual` { a: "a1", b: "b2", c: "c3" }
 
-  let
-    (parSequenceRecord__config :: Reqs String) =
-      { a: "www.purescript.org"
-      , b: "try.purescript.org"
-      }
+    it "parSequenceRecord" do
+      let
+        config :: Reqs String
+        config =
+          { a: "www.purescript.org"
+          , b: "try.purescript.org"
+          }
 
-    parSequenceRecord__process input = ContT \handler -> void $ setTimeout 0 $ handler $ input <> " success"
+        process input = ContT \handler -> void $ setTimeout 0 $ handler $ input <> " success"
 
-    (parSequenceRecord__config' :: Reqs (ContT Unit Effect String)) = mapRecord parSequenceRecord__process parSequenceRecord__config
-    (parSequenceRecord__config'' :: ContT Unit Effect (Reqs String)) = parSequenceRecord parSequenceRecord__config'
+        config' :: Reqs (ContT Unit Effect String)
+        config' = mapRecord process config
 
-  runContT parSequenceRecord__config'' \(result :: Reqs String) -> do
-    assert' "parSequenceRecord" $ result ==
-      { a: "www.purescript.org success"
-      , b: "try.purescript.org success"
-      }
-    logShow "async test parSequenceRecord finished"
+        runAll :: ContT Unit Effect (Reqs String)
+        runAll = parSequenceRecord config'
 
-  logShow "tests finished"
+      liftEffect $ runContT runAll \result -> do
+        result `shouldEqual`
+          { a: "www.purescript.org success"
+          , b: "try.purescript.org success"
+          }
+
+    describe "Record.ExtraSrghma.ZipRecord" do
+      it "zips two matching records" do
+        let
+          recordA = { a: 1, b: true }
+          recordB = { a: "hello", b: "world" }
+
+          expected = { a: Tuple 1 "hello", b: Tuple true "world" }
+          result = zipRecord recordA recordB
+
+        result `shouldEqual` expected
