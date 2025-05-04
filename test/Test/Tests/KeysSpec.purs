@@ -1,4 +1,4 @@
-module Test.Tests.KeysTests where
+module Test.Tests.KeysSpec where
 
 import Prelude
 import Record.ExtraSrghma.Keys (pick, recordKeys, recordKeys', rowKeys, rowKeys', slistKeys, slistKeys')

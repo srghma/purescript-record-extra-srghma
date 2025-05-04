@@ -1,4 +1,4 @@
-module Test.Tests.FoldlValuesTests where
+module Test.Tests.FoldlValuesSpec where
 
 import Prelude
 

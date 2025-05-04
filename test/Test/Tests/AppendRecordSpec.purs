@@ -1,4 +1,4 @@
-module Test.Tests.AppendRecordTests where
+module Test.Tests.AppendRecordSpec where
 
 import Prelude
 

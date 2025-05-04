@@ -1,4 +1,4 @@
-module Test.Tests.MapValuesWithIndexTests where
+module Test.Tests.MapValuesWithIndexSpec where
 
 import Prelude
 

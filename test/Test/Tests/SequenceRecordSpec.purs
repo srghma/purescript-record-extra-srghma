@@ -1,4 +1,4 @@
-module Test.Tests.SequenceRecordTests where
+module Test.Tests.SequenceRecordSpec where
 
 import Prelude
 

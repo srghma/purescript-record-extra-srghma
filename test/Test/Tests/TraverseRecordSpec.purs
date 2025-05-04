@@ -1,4 +1,4 @@
-module Test.Tests.TraverseRecordTests where
+module Test.Tests.TraverseRecordSpec where
 
 import Prelude
 

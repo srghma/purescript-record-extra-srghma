@@ -1,4 +1,4 @@
-module Test.Tests.CompareRecordTests where
+module Test.Tests.CompareRecordSpec where
 
 import Prelude
 

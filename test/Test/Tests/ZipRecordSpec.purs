@@ -1,4 +1,4 @@
-module Test.Tests.ZipRecordTests where
+module Test.Tests.ZipRecordSpec where
 
 import Prelude
 

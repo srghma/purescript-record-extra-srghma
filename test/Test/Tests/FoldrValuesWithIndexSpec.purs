@@ -1,4 +1,4 @@
-module Test.Tests.FoldrValuesWithIndexTests where
+module Test.Tests.FoldrValuesWithIndexSpec where
 
 import Prelude
 

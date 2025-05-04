@@ -1,4 +1,4 @@
-module Test.Tests.MapRecordTests where
+module Test.Tests.MapRecordSpec where
 
 import Prelude
 

@@ -1,4 +1,4 @@
-module Test.Tests.ValuesToUnfoldableLazyTests where
+module Test.Tests.ValuesToUnfoldableLazySpec where
 
 import Prelude
 

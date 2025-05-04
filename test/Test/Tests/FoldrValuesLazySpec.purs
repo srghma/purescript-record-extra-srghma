@@ -1,4 +1,4 @@
-module Test.Tests.FoldrValuesLazyTests where
+module Test.Tests.FoldrValuesLazySpec where
 
 import Prelude
 
