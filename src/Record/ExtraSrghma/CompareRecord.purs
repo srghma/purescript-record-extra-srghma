@@ -7,22 +7,7 @@ import Type.Prelude (class IsSymbol, Proxy(..))
 import Prim.Row as Row
 import Prim.RowList as RL
 
-data SList
-
-foreign import data SCons :: Symbol -> SList -> SList
-foreign import data SNil :: SList
-
-infixr 6 type SCons as :::
-
-class SListToRowList (xs :: SList) (rl :: RL.RowList Type) | xs -> rl, rl -> xs
-
-instance slToRlSNil :: SListToRowList SNil RL.Nil
-
-instance slToRlSCons ::
-  ( SListToRowList sTail tail
-  ) =>
-  SListToRowList (SCons name sTail) (RL.Cons name trash tail)
-
+-- | Type class to compare two records field by field, following a known ordering of keys (a RowList).
 class OrdRecord :: forall k. k -> Row Type -> Constraint
 class
   OrdRecord rl row
@@ -30,6 +15,7 @@ class
   where
   compareRecordImpl :: Record row -> Record row -> Ordering
 
+-- | Compare two records by the current head field, and recurse on the tail if equal.
 instance ordRecordCons ::
   ( IsSymbol name
   , Ord ty
@@ -46,9 +32,12 @@ instance ordRecordCons ::
     valA = Record.get namep a
     valB = Record.get namep b
 
+-- | Base case: comparing empty RowList always returns EQ.
 instance ordRecordNil :: OrdRecord RL.Nil row where
   compareRecordImpl _ _ = EQ
 
+-- | Public interface for comparing two records deterministically by their keys.
+-- | You must provide a type with an instance of `RL.RowToList` to determine key ordering.
 compareRecord
   :: forall row rl
    . RL.RowToList row rl

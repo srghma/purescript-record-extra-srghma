@@ -70,6 +70,7 @@
             "parallel",
             "prelude",
             "record",
+            "spec-discovery",
             "spec-node",
             "transformers",
             "tuples",
@@ -141,6 +142,7 @@
             "refs",
             "safe-coerce",
             "spec",
+            "spec-discovery",
             "spec-node",
             "st",
             "strings",
@@ -1562,6 +1564,19 @@
         "tailrec",
         "transformers",
         "tuples"
+      ]
+    },
+    "spec-discovery": {
+      "type": "registry",
+      "version": "8.4.0",
+      "integrity": "sha256-ajaGtBe+WBnURPPxIfqyiBbxI9DvbCGpxpYYYrvi5nk=",
+      "dependencies": [
+        "aff",
+        "effect",
+        "foldable-traversable",
+        "prelude",
+        "spec",
+        "spec-node"
       ]
     },
     "spec-node": {
