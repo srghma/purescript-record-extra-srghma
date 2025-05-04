@@ -2,7 +2,7 @@ package:
   name: record-extra-srghma
   publish:
     license: Apache-2.0
-    version: 0.2.0
+    version: 0.2.1
     location:
       githubOwner: srghma
       githubRepo: purescript-record-extra-srghma
@@ -12,6 +12,7 @@ package:
     - functions: ">=6.0.0 <7.0.0"
     - lists: ">=7.0.0 <8.0.0"
     - maybe: ">=6.0.0 <7.0.0"
+    - nonempty: ">=7.0.0 <8.0.0"
     - parallel: ">=7.0.0 <8.0.0"
     - prelude: ">=6.0.2 <7.0.0"
     - record: ">=4.0.0 <5.0.0"

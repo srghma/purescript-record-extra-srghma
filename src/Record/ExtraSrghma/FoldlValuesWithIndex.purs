@@ -2,11 +2,12 @@ module Record.ExtraSrghma.FoldlValuesWithIndex where
 
 import Prelude
 
-import Record (get) as Record
-import Type.Prelude (class IsSymbol, reflectSymbol, Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 import Prim.Row as Row
 import Prim.RowList as RL
+import Record (get) as Record
+import Record.ExtraSrghma.MapValuesWithIndex (class MapValuesWithIndex, mapValuesWithIndex)
+import Type.Prelude (class IsSymbol, reflectSymbol, Proxy(..))
+import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 
 foldlValuesWithIndex
   :: forall accum row fieldType rowList
@@ -71,27 +72,26 @@ instance
 
 ---------------------
 
----- NOTE: actually there is no need for them bc it is not visible in output types
-
 foldlValuesWithIndex1
-  :: forall accum row fieldType rowList
+  :: forall row fieldType rowList
    . RL.RowToList row rowList
   => FoldlValuesWithIndex1 rowList row fieldType
-  => (accum -> String -> fieldType -> accum)
-  -> accum
+  => (fieldType -> String -> fieldType -> fieldType)
   -> Record row
-  -> accum
+  -> fieldType
 foldlValuesWithIndex1 = foldlValuesWithIndexImpl1 @rowList
 
 foldMapValuesWithIndexL1
-  :: forall accum row fieldType rowList
+  :: forall fieldType row rowList row' rowList' m
    . RL.RowToList row rowList
-  => FoldlValuesWithIndex1 rowList row fieldType
-  => Monoid accum
-  => (String -> fieldType -> accum)
+  => RL.RowToList row' rowList'
+  => FoldlValuesWithIndex1 rowList' row' m
+  => MapValuesWithIndex rowList row fieldType m () row'
+  => Monoid m
+  => (String -> fieldType -> m)
   -> Record row
-  -> accum
-foldMapValuesWithIndexL1 f = foldlValuesWithIndex1 (\acc key x -> acc <> f key x) mempty
+  -> m
+foldMapValuesWithIndexL1 f r = foldlValuesWithIndex1 (\m _ m2 -> m <> m2) $ mapValuesWithIndex f r
 
 class
   ( Homogeneous row fieldType
@@ -101,14 +101,12 @@ class
   | rowList -> row fieldType
   where
   foldlValuesWithIndexImpl1
-    :: forall accum
-     . (accum -> String -> fieldType -> accum)
-    -> accum
+    :: (fieldType -> String -> fieldType -> fieldType)
     -> Record row
-    -> accum
+    -> fieldType
 
 instance
-  ( FoldlValuesWithIndex1 tailRowList row fieldType
+  ( FoldlValuesWithIndex tailRowList row fieldType
   , Homogeneous tailRow fieldType
   , HomogeneousRowList tailRowList fieldType
   , HomogeneousRowList trash fieldType
@@ -118,12 +116,7 @@ instance
   ) =>
   FoldlValuesWithIndex1 (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldlValuesWithIndexImpl1 f accum record = foldlValuesWithIndexImpl1 @tailRowList f accum' record
+  foldlValuesWithIndexImpl1 f record = foldlValuesWithIndexImpl @tailRowList f accum record
     where
-    value :: fieldType
-    value = Record.get (Proxy :: Proxy name) record
-
-    key :: String
-    key = reflectSymbol (Proxy :: Proxy name)
-
-    accum' = f accum key value
+    accum :: fieldType
+    accum = Record.get (Proxy :: Proxy name) record

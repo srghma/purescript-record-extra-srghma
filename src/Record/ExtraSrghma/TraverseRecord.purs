@@ -22,7 +22,7 @@ instance Applicative m => TraverseRecord RL.Nil rowF rowA () () m where
   traverseRecordImpl _ _ = pure identity
 
 -- Recursive case
-else instance 
+else instance
   ( IsSymbol name
   , Row.Cons name (a -> m b) trashF rowF
   , Row.Cons name a trashA rowA

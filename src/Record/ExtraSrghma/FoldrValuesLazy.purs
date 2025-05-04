@@ -2,12 +2,13 @@ module Record.ExtraSrghma.FoldrValuesLazy where
 
 import Prelude
 
-import Record (get) as Record
-import Type.Prelude (class IsSymbol, Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
+import Control.Lazy as Lazy
 import Prim.Row as Row
 import Prim.RowList as RL
-import Control.Lazy as Lazy
+import Record (get) as Record
+import Record.ExtraSrghma.MapRecord (class MapRecord, mapRecord)
+import Type.Prelude (class IsSymbol, Proxy(..))
+import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 
 foldrValuesLazy
   :: forall accum row fieldType rowList
@@ -71,58 +72,56 @@ instance
 
 -------------------------------------------
 
----- NOTE: actually there is no need for them bc it is not visible in output types
-
+-- | Fold over the values of a record, applying the function to each field, but no initial accumulator.
 foldrValuesLazy1
-  :: forall accum row fieldType rowList
-   . Lazy.Lazy accum
-  => RL.RowToList row rowList
+  :: forall row fieldType rowList
+   . RL.RowToList row rowList
+  => Lazy.Lazy fieldType
   => FoldrValuesLazy1 rowList row fieldType
-  => (fieldType -> accum -> accum)
-  -> accum
+  => (fieldType -> fieldType -> fieldType)
   -> Record row
-  -> accum
+  -> fieldType
 foldrValuesLazy1 = foldrValuesLazyImpl1 @rowList
 
 foldMapValuesLazyR1
-  :: forall accum row fieldType rowList
-   . Lazy.Lazy accum
-  => RL.RowToList row rowList
-  => FoldrValuesLazy1 rowList row fieldType
-  => Monoid accum
-  => (fieldType -> accum)
+  :: forall m row rowList fieldType row' rowList'
+   . RL.RowToList row rowList
+  => RL.RowToList row' rowList'
+  => Lazy.Lazy m
+  => FoldrValuesLazy1 rowList' row' m
+  => MapRecord rowList row fieldType m () row'
+  => Semigroup m
+  => (fieldType -> m)
   -> Record row
-  -> accum
-foldMapValuesLazyR1 f = foldrValuesLazy1 (\x acc -> acc <> f x) mempty
+  -> m
+foldMapValuesLazyR1 f r = foldrValuesLazy1 (<>) $ mapRecord f r
 
 class
   ( Homogeneous row fieldType
-  , HomogeneousRowList rl fieldType
+  , HomogeneousRowList rowList fieldType
   ) <=
-  FoldrValuesLazy1 rl row fieldType
-  | row -> fieldType
+  FoldrValuesLazy1 (rowList :: RL.RowList Type) (row :: Row Type) fieldType
+  | rowList -> row fieldType
   where
   foldrValuesLazyImpl1
-    :: forall accum
-     . Lazy.Lazy accum
-    => (fieldType -> accum -> accum)
-    -> accum
+    :: (fieldType -> fieldType -> fieldType)
     -> Record row
-    -> accum
+    -> fieldType
 
 instance
-  ( FoldrValuesLazy1 tailRowList row fieldType
+  ( FoldrValuesLazy tailRowList row fieldType
   , Homogeneous tailRow fieldType
   , HomogeneousRowList tailRowList fieldType
   , HomogeneousRowList trash fieldType
   , IsSymbol name
+  , Lazy.Lazy fieldType
   , RL.RowToList row trash
   , Row.Cons name fieldType tailRow row
   ) =>
   FoldrValuesLazy1 (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldrValuesLazyImpl1 f accum record = Lazy.defer \_ ->
-    f value $ foldrValuesLazyImpl1 @tailRowList f accum record
+  foldrValuesLazyImpl1 f record = Lazy.defer \_ ->
+    foldrValuesLazyImpl @tailRowList f accum record
     where
-    value :: fieldType
-    value = Record.get (Proxy :: Proxy name) record
+    accum :: fieldType
+    accum = Record.get (Proxy :: Proxy name) record

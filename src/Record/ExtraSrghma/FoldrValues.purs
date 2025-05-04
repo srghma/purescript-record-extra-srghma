@@ -2,11 +2,12 @@ module Record.ExtraSrghma.FoldrValues where
 
 import Prelude
 
-import Record (get) as Record
-import Type.Prelude (class IsSymbol, Proxy(..))
-import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 import Prim.Row as Row
 import Prim.RowList as RL
+import Record (get) as Record
+import Record.ExtraSrghma.MapRecord (class MapRecord, mapRecord)
+import Type.Prelude (class IsSymbol, Proxy(..))
+import Type.Row.Homogeneous (class Homogeneous, class HomogeneousRowList)
 
 foldrValues
   :: forall accum row fieldType rowList
@@ -66,18 +67,27 @@ instance
 
 -------------------------
 
----- NOTE: actually there is no need for them bc it is not visible in output types
-
 -- | Fold over the values of a record, applying the function to each field, but no initial accumulator.
 foldrValues1
-  :: forall accum row fieldType rowList
+  :: forall row fieldType rowList
    . RL.RowToList row rowList
   => FoldrValues1 rowList row fieldType
-  => (fieldType -> accum -> accum)
-  -> accum
+  => (fieldType -> fieldType -> fieldType)
   -> Record row
-  -> accum
+  -> fieldType
 foldrValues1 = foldrValuesImpl1 @rowList
+
+foldMapValuesR1
+  :: forall m row rowList fieldType row' rowList'
+   . RL.RowToList row rowList
+  => RL.RowToList row' rowList'
+  => FoldrValues1 rowList' row' m
+  => MapRecord rowList row fieldType m () row'
+  => Semigroup m
+  => (fieldType -> m)
+  -> Record row
+  -> m
+foldMapValuesR1 f r = foldrValues1 (<>) $ mapRecord f r
 
 class
   ( Homogeneous row fieldType
@@ -87,11 +97,9 @@ class
   | rowList -> row fieldType
   where
   foldrValuesImpl1
-    :: forall accum
-     . (fieldType -> accum -> accum)
-    -> accum
+    :: (fieldType -> fieldType -> fieldType)
     -> Record row
-    -> accum
+    -> fieldType
 
 instance
   ( FoldrValues tailRowList row fieldType
@@ -104,17 +112,7 @@ instance
   ) =>
   FoldrValues1 (RL.Cons name fieldType tailRowList) row fieldType
   where
-  foldrValuesImpl1 f accum record = f value $ foldrValuesImpl @tailRowList f accum record
+  foldrValuesImpl1 f record = foldrValuesImpl @tailRowList f accum record
     where
-    value :: fieldType
-    value = Record.get (Proxy :: Proxy name) record
-
-foldMapValuesR1
-  :: forall accum row fieldType rowList
-   . RL.RowToList row rowList
-  => FoldrValues1 rowList row fieldType
-  => Monoid accum
-  => (fieldType -> accum)
-  -> Record row
-  -> accum
-foldMapValuesR1 f = foldrValues1 (\x acc -> acc <> f x) mempty
+    accum :: fieldType
+    accum = Record.get (Proxy :: Proxy name) record
