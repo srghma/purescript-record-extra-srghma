@@ -19,8 +19,12 @@ parSequenceRecord
   => ParSequenceRecord rowList inputRow () outputRow parM m
   => Record inputRow
   -> m (Record outputRow)
-parSequenceRecord record = sequential $ Builder.build <@> {} <$> builderAction
+parSequenceRecord record = sequential action
   where
+  action :: parM (Record outputRow)
+  action = map Builder.buildFromScratch builderAction
+
+  builderAction :: parM (Builder (Record ()) (Record outputRow))
   builderAction = parSequenceRecordImpl @rowList record
 
 -- | Class for sequencing a record of monadic values in parallel

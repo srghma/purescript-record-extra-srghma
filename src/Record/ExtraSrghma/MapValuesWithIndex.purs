@@ -28,7 +28,7 @@ mapValuesWithIndex
   => (String -> a -> b)
   -> Record row
   -> Record row'
-mapValuesWithIndex transform record = Builder.build builder {}
+mapValuesWithIndex transform record = Builder.buildFromScratch builder
   where
   builder = mapValuesWithIndexBuilder @rowList transform record
 

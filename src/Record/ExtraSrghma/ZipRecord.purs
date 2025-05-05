@@ -63,5 +63,4 @@ zipRecord
   => Record rowL
   -> Record rowR
   -> Record zippedRow
-zipRecord recordL recordR =
-  Builder.build (zipRecordImpl @rowListL @rowListR recordL recordR) {}
+zipRecord recordL recordR = Builder.buildFromScratch (zipRecordImpl @rowListL @rowListR recordL recordR)

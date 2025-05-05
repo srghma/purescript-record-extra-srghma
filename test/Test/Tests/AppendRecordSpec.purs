@@ -29,7 +29,7 @@ spec =
       let
         bigger = { x: AdditiveInt 10, y: AdditiveInt 5, tag: "done" }
         smaller = { x: AdditiveInt 1, y: AdditiveInt 2 }
-        expected = { x: AdditiveInt 11, y: AdditiveInt 7, tag: "done" }
+        expected = { x: AdditiveInt 11, tag: "done", y: AdditiveInt 7 }
       appendRecord bigger smaller `shouldEqual` expected
 
     -- NOTE: will not throw unlike `(bigger <> smaller) `shouldEqual` expected` (Which requires them to be equal)

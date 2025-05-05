@@ -61,6 +61,6 @@ sequenceRecord
   => SequenceRecord rowList row () row' m
   => Record row
   -> m (Record row')
-sequenceRecord record = Builder.build <@> {} <$> builder
+sequenceRecord record = map Builder.buildFromScratch builder
   where
   builder = sequenceRecordImpl @rowList record

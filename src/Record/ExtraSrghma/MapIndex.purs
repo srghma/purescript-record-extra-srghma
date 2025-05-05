@@ -14,7 +14,7 @@ mapIndex
   => (String -> b)
   -> Proxy row
   -> Record row'
-mapIndex f _ = Builder.build builder {}
+mapIndex f _ = Builder.buildFromScratch builder
   where
   builder = mapIndexBuilder @rowList f
 

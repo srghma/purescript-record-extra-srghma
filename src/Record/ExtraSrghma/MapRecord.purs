@@ -16,7 +16,7 @@ mapRecord
   => (a -> b)
   -> Record row
   -> Record row'
-mapRecord f r = Builder.build builder {}
+mapRecord f r = Builder.buildFromScratch builder
   where
   builder = mapRecordBuilder @rowList f r
 

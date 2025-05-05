@@ -50,4 +50,4 @@ traverseRecord
   => Record rowF
   -> Record rowA
   -> m (Record rowOut)
-traverseRecord fs as = Builder.build <@> {} <$> traverseRecordImpl @rowList fs as
+traverseRecord fs as = map Builder.buildFromScratch $ traverseRecordImpl @rowList fs as
