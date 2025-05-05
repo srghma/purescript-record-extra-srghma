@@ -1,50 +1,48 @@
 module Record.ExtraSrghma.Keys.Array where
 
 import Data.Array as Array
-import Data.Array.NonEmpty (NonEmptyArray)
-import Data.Array.NonEmpty as NonEmptyArray
+import Data.String.NonEmpty (class MakeNonEmpty, NonEmptyString, nes)
 import Prim.RowList as RL
 import Type.Prelude (class IsSymbol, Proxy(..), reflectSymbol)
 
--- Array
------ RL
-class RowListToArrayOfKeys (rowList :: RL.RowList Type) where
-  rowListToArrayOfKeys :: Array String
+-- Array String (AK)
 
-instance RowListToArrayOfKeys RL.Nil where
-  rowListToArrayOfKeys = []
+class RLToAK (rowList :: RL.RowList Type) where
+  rlToAK :: Array String
 
-instance (IsSymbol name, RowListToArrayOfKeys tail) => RowListToArrayOfKeys (RL.Cons name ty tail) where
-  rowListToArrayOfKeys = Array.cons (reflectSymbol (Proxy :: Proxy name)) (rowListToArrayOfKeys @tail)
+instance RLToAK RL.Nil where
+  rlToAK = []
 
------ Row
-rowToArrayOfKeys :: forall @row rowList. RL.RowToList row rowList => RowListToArrayOfKeys rowList => Array String
-rowToArrayOfKeys = rowListToArrayOfKeys @rowList
+instance (IsSymbol name, RLToAK tail) => RLToAK (RL.Cons name ty tail) where
+  rlToAK = Array.cons (reflectSymbol (Proxy :: Proxy name)) (rlToAK @tail)
 
------ Record
-class RecordToArrayOfKeys :: forall k. k -> Constraint
-class RecordToArrayOfKeys a where
-  recordToArrayOfKeys :: Array String
+rowToAK :: forall @row rowList. RL.RowToList row rowList => RLToAK rowList => Array String
+rowToAK = rlToAK @rowList
 
-instance (RL.RowToList row rowList, RowListToArrayOfKeys rowList) => RecordToArrayOfKeys (Record row) where
-  recordToArrayOfKeys = rowListToArrayOfKeys @rowList
+class RecordToAK :: forall k. k -> Constraint
+class RecordToAK a where
+  recordToAK :: Array String
 
--- NonEmptyArray
------ RL
-class RowListToArrayOfKeys1 (rowList :: RL.RowList Type) where
-  rowListToArrayOfKeys1 :: NonEmptyArray String
+instance (RL.RowToList row rowList, RLToAK rowList) => RecordToAK (Record row) where
+  recordToAK = rlToAK @rowList
 
-instance (IsSymbol name, RowListToArrayOfKeys tail) => RowListToArrayOfKeys1 (RL.Cons name ty tail) where
-  rowListToArrayOfKeys1 = NonEmptyArray.cons' (reflectSymbol (Proxy :: Proxy name)) (rowListToArrayOfKeys @tail)
+-- Array NonEmptyString (ANEK)
 
------ Row
-rowToArrayOfKeys1 :: forall @row rowList. RL.RowToList row rowList => RowListToArrayOfKeys1 rowList => NonEmptyArray String
-rowToArrayOfKeys1 = rowListToArrayOfKeys1 @rowList
+class RLToANEK (rowList :: RL.RowList Type) where
+  rlToANEK :: Array NonEmptyString
 
------ Record
-class RecordToArrayOfKeys1 :: forall k. k -> Constraint
-class RecordToArrayOfKeys1 a where
-  recordToArrayOfKeys1 :: NonEmptyArray String
+instance RLToANEK RL.Nil where
+  rlToANEK = []
 
-instance (RL.RowToList row rowList, RowListToArrayOfKeys1 rowList) => RecordToArrayOfKeys1 (Record row) where
-  recordToArrayOfKeys1 = rowListToArrayOfKeys1 @rowList
+instance (IsSymbol name, MakeNonEmpty name, RLToANEK tail) => RLToANEK (RL.Cons name ty tail) where
+  rlToANEK = Array.cons (nes (Proxy :: Proxy name)) (rlToANEK @tail)
+
+rowToANEK :: forall @row rowList. RL.RowToList row rowList => RLToANEK rowList => Array NonEmptyString
+rowToANEK = rlToANEK @rowList
+
+class RecordToANEK :: forall k. k -> Constraint
+class RecordToANEK a where
+  recordToANEK :: Array NonEmptyString
+
+instance (RL.RowToList row rowList, RLToANEK rowList) => RecordToANEK (Record row) where
+  recordToANEK = rlToANEK @rowList

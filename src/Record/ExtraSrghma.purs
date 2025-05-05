@@ -5,16 +5,20 @@ module Record.ExtraSrghma
 
 import Record.ExtraSrghma.AppendRecord (class AppendSubrecordImpl, appendRecord, appendSubrecordImpl) as Export
 import Record.ExtraSrghma.MapRecord (class MapRecord, mapRecord, mapRecordBuilder) as Export
-import Record.ExtraSrghma.SList (class SListToArrayOfNonEmptyStrings, class SListToArrayOfNonEmptyStrings1, class SListToArrayOfStrings, class SListToArrayOfStrings1, class SListToListOfNonEmptyStrings, class SListToListOfNonEmptyStrings1, class SListToListOfStrings, class SListToListOfStrings1, class SListToRowList, type (:::), SCons, SList, SNil, slistToArrayOfNonEmptyStrings, slistToArrayOfNonEmptyStrings1, slistToArrayOfStrings, slistToArrayOfStrings1, slistToListOfNonEmptyStrings, slistToListOfNonEmptyStrings1, slistToListOfStrings, slistToListOfStrings1) as Export
 import Record.ExtraSrghma.SequenceRecord (class SequenceRecord, sequenceRecord, sequenceRecordImpl) as Export
 import Record.ExtraSrghma.MapValuesWithIndex (class MapValuesWithIndex, mapValuesWithIndex, mapValuesWithIndexBuilder) as Export
 import Record.ExtraSrghma.ParSequenceRecord (class ParSequenceRecord, parSequenceRecord, parSequenceRecordImpl) as Export
-import Record.ExtraSrghma.Keys.List (class RecordToListOfKeys, class RecordToListOfKeys1, class RowListToListOfKeys, class RowListToListOfKeys1, recordToListOfKeys, recordToListOfKeys1, rowListToListOfKeys, rowListToListOfKeys1, rowToListOfKeys, rowToListOfKeys1) as Export
+import Record.ExtraSrghma.Keys.NonEmptyArray (class RLToNEAK, class RLToNEANEK, class RecordToNEAK, class RecordToNEANEK, recordToNEAK, recordToNEANEK, rlToNEAK, rlToNEANEK, rowToNEAK, rowToNEANEK) as Export
+import Record.ExtraSrghma.Keys.List (class RLToLK, class RLToLNEK, class RecordToLK, class RecordToLNEK, recordToLK, recordToLNEK, rlToLK, rlToLNEK, rowToLK, rowToLNEK) as Export
 import Record.ExtraSrghma.Keys.Pick (pick, pickFn) as Export
-import Record.ExtraSrghma.Keys.Array (class RecordToArrayOfKeys, class RecordToArrayOfKeys1, class RowListToArrayOfKeys, class RowListToArrayOfKeys1, recordToArrayOfKeys, recordToArrayOfKeys1, rowListToArrayOfKeys, rowListToArrayOfKeys1, rowToArrayOfKeys, rowToArrayOfKeys1) as Export
+import Record.ExtraSrghma.Keys.Array (class RLToAK, class RLToANEK, class RecordToAK, class RecordToANEK, recordToAK, recordToANEK, rlToAK, rlToANEK, rowToAK, rowToANEK) as Export
+import Record.ExtraSrghma.Keys.NonEmptyList (class RLToNELK, class RLToNELNEK, class RecordToNELK, class RecordToNELNEK, recordToNELK, recordToNELNEK, rlToNELK, rlToNELNEK, rowToNELK, rowToNELNEK) as Export
 import Record.ExtraSrghma.FoldrValuesLazy (class FoldrValuesLazy, class FoldrValuesLazy1, foldMapValuesLazyR, foldMapValuesLazyR1, foldrValuesLazy, foldrValuesLazy1, foldrValuesLazyImpl, foldrValuesLazyImpl1) as Export
 import Record.ExtraSrghma.CompareRecord (class OrdRecord, compareRecord, compareRecordImpl) as Export
 import Record.ExtraSrghma.MapIndex (class MapIndex, mapIndex, mapIndexBuilder) as Export
+import Record.ExtraSrghma.SList.Types (class SListToRowList, type (:::), SCons, SList, SNil) as Export
+import Record.ExtraSrghma.SList.List (class SListToLNES, class SListToLS, class SListToNELNES, class SListToNELS, slistToLNES, slistToLS, slistToNELNES, slistToNELS) as Export
+import Record.ExtraSrghma.SList.Array (class SListToANES, class SListToAS, class SListToNEANES, class SListToNEAS, slistToANES, slistToAS, slistToNEANES, slistToNEAS) as Export
 import Record.ExtraSrghma.TraverseRecord (class TraverseRecord, traverseRecord, traverseRecordImpl) as Export
 import Record.ExtraSrghma.FoldrValues (class FoldrValues, class FoldrValues1, foldMapValuesR, foldMapValuesR1, foldrValues, foldrValues1, foldrValuesImpl, foldrValuesImpl1) as Export
 import Record.ExtraSrghma.ZipRecord (class ZipRecord, zipRecord, zipRecordImpl) as Export

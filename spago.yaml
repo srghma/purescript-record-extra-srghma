@@ -2,7 +2,7 @@ package:
   name: record-extra-srghma
   publish:
     license: Apache-2.0
-    version: 0.2.3
+    version: 0.2.4
     location:
       githubOwner: srghma
       githubRepo: purescript-record-extra-srghma
