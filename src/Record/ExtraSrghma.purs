@@ -17,8 +17,10 @@ import Record.ExtraSrghma.FoldrValuesLazy (class FoldrValuesLazy, class FoldrVal
 import Record.ExtraSrghma.CompareRecord (class OrdRecord, compareRecord, compareRecordImpl) as Export
 import Record.ExtraSrghma.MapIndex (class MapIndex, mapIndex, mapIndexBuilder) as Export
 import Record.ExtraSrghma.SList.Types (class SListToRowList, type (:::), SCons, SList, SNil) as Export
-import Record.ExtraSrghma.SList.List (class SListToLNES, class SListToLS, class SListToNELNES, class SListToNELS, slistToLNES, slistToLS, slistToNELNES, slistToNELS) as Export
-import Record.ExtraSrghma.SList.Array (class SListToANES, class SListToAS, class SListToNEANES, class SListToNEAS, slistToANES, slistToAS, slistToNEANES, slistToNEAS) as Export
+import Record.ExtraSrghma.SList.NonEmptyArray (class SListToNEANES, class SListToNEAS, slistToNEANES, slistToNEAS) as Export
+import Record.ExtraSrghma.SList.List (class SListToLNES, class SListToLS, slistToLNES, slistToLS) as Export
+import Record.ExtraSrghma.SList.Array (class SListToANES, class SListToAS, slistToANES, slistToAS) as Export
+import Record.ExtraSrghma.SList.NonEmptyList (class SListToNELNES, class SListToNELS, slistToNELNES, slistToNELS) as Export
 import Record.ExtraSrghma.TraverseRecord (class TraverseRecord, traverseRecord, traverseRecordImpl) as Export
 import Record.ExtraSrghma.FoldrValues (class FoldrValues, class FoldrValues1, foldMapValuesR, foldMapValuesR1, foldrValues, foldrValues1, foldrValuesImpl, foldrValuesImpl1) as Export
 import Record.ExtraSrghma.ZipRecord (class ZipRecord, zipRecord, zipRecordImpl) as Export
