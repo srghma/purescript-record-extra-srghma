@@ -17,7 +17,6 @@ instance Semigroup AdditiveInt where
 spec :: Spec Unit
 spec =
   describe "appendRecord" do
-
     it "appends overlapping subrecords with Semigroup values (String)" do
       let
         bigger = { foo: "a", bar: "b", baz: 42 }
@@ -30,9 +29,8 @@ spec =
         bigger = { x: AdditiveInt 10, y: AdditiveInt 5, tag: "done" }
         smaller = { x: AdditiveInt 1, y: AdditiveInt 2 }
         expected = { x: AdditiveInt 11, tag: "done", y: AdditiveInt 7 }
+      -- NOTE: will not throw unlike `(bigger <> smaller) `shouldEqual` expected` (Which requires them to be equal in size)
       appendRecord bigger smaller `shouldEqual` expected
-
-    -- NOTE: will not throw unlike `(bigger <> smaller) `shouldEqual` expected` (Which requires them to be equal)
 
     it "does nothing when smaller is empty" do
       let

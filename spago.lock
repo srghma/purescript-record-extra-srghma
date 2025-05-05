@@ -33,6 +33,9 @@
               "record": ">=4.0.0 <5.0.0"
             },
             {
+              "strings": ">=6.0.1 <7.0.0"
+            },
+            {
               "tuples": ">=7.0.0 <8.0.0"
             },
             {
@@ -51,18 +54,22 @@
             "distributive",
             "effect",
             "either",
+            "enums",
             "exceptions",
             "exists",
             "foldable-traversable",
             "functions",
             "functors",
+            "gen",
             "identity",
+            "integers",
             "invariant",
             "lazy",
             "lists",
             "maybe",
             "newtype",
             "nonempty",
+            "numbers",
             "orders",
             "parallel",
             "partial",
@@ -72,6 +79,7 @@
             "refs",
             "safe-coerce",
             "st",
+            "strings",
             "tailrec",
             "transformers",
             "tuples",
@@ -83,7 +91,9 @@
         },
         "test": {
           "dependencies": [
+            "aff",
             "arrays",
+            "console",
             "control",
             "effect",
             "functions",
