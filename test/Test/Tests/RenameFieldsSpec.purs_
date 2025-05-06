@@ -1,0 +1,19 @@
+module Test.Tests.RenameFieldsSpec where
+
+import Prelude
+
+import Record.ExtraSrghma.RenameFields
+import Test.Spec (Spec, describe, it)
+import Test.Spec.Assertions (shouldEqual)
+
+spec :: Spec Unit
+spec =
+  it "renameFields" do
+    let
+      record :: { foo :: Int } -- baz :: String }
+      record = { foo: 1 } -- , baz: "hi" }
+
+      renamed :: { bar :: Int } -- quux :: String }
+      renamed = renameFields @(foo :: "bar") record
+
+    renamed `shouldEqual` { bar: 1 } -- , quux: "hi" }

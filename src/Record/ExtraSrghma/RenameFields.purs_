@@ -1,0 +1,48 @@
+module Record.ExtraSrghma.RenameFields where
+
+import Prelude
+
+import Prim.Row as Row
+import Prim.Row as Row
+import Prim.RowList as RL
+import Prim.RowList as RL
+import Prim.Symbol as Symbol
+import Record as R
+import Type.Prelude (class IsSymbol)
+import Type.Proxy (Proxy(..))
+import Unsafe.Coerce (unsafeCoerce)
+
+class
+  RenameFieldsRL
+    (rowListRenames :: RL.RowList Symbol)
+    (rowListIn :: RL.RowList Type)
+    (rowListOut :: RL.RowList Type)
+    (rowIn :: Row Type)
+    (rowOut :: Row Type)
+  | rowListRenames rowIn -> rowOut rowListOut
+  , rowListIn -> rowIn
+  , rowListOut -> rowOut where
+  renameFieldsRL :: Record rowIn -> Record rowOut
+
+-- Base case
+instance RenameFieldsRL RL.Nil RL.Nil RL.Nil () () where
+  renameFieldsRL _ = {}
+
+instance renameFieldsCons ::
+  ( IsSymbol keyIn
+  , IsSymbol keyOut
+  , Row.Cons keyIn value rowIn_tail rowIn
+  , Row.Lacks keyOut rowOut
+  , Row.Cons keyOut value rowOut rowOut
+  , RenameFieldsRL rowListRenames_tail rowListIn_tail rowListOut_tail rowIn rowOut
+  ) =>
+  RenameFieldsRL (RL.Cons keyIn keyOut rowListRenames_tail) (RL.Cons keyIn value rowListIn_tail) (RL.Cons keyOut value rowListOut_tail) rowIn rowOut where
+  renameFieldsRL record =
+    let
+      val = R.get (Proxy :: Proxy keyIn) record
+      renamedRest = renameFieldsRL @rowListRenames_tail @rowListIn_tail @rowListOut_tail record
+    in
+      R.insert (Proxy :: Proxy keyOut) val renamedRest
+
+renameFields :: forall @rowRenames rowListRenames rowIn rowListIn rowOut rowListOut. RL.RowToList rowRenames rowListRenames => RL.RowToList rowIn rowListIn => RL.RowToList rowOut rowListOut => RenameFieldsRL rowListRenames rowListIn rowListOut rowIn rowOut => Record rowIn -> Record rowOut
+renameFields = renameFieldsRL @rowListRenames @rowListIn @rowListOut
