@@ -2,7 +2,7 @@ package:
   name: record-extra-srghma
   publish:
     license: Apache-2.0
-    version: 0.2.5
+    version: 0.2.6
     location:
       githubOwner: srghma
       githubRepo: purescript-record-extra-srghma
@@ -42,6 +42,9 @@ package:
       - typelevel-prelude
       - unfoldable
 workspace:
-  extraPackages: {}
+  extraPackages:
+    {}
+    # spec-discovery:
+    #   path: /home/srghma/projects/purescript-spec-discovery
   packageSet:
     registry: 64.6.1

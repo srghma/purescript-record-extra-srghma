@@ -30,8 +30,7 @@ foldMapValuesL
 foldMapValuesL f = foldlValues (\acc x -> acc <> f x) mempty
 
 class
-  ( Homogeneous row fieldType
-  , HomogeneousRowList rowList fieldType
+  ( HomogeneousRowList rowList fieldType
   ) <=
   FoldlValues (rowList :: RL.RowList Type) (row :: Row Type) fieldType
   | rowList -> row fieldType
@@ -45,8 +44,6 @@ class
 
 instance
   ( FoldlValues tailRowList row fieldType
-  , Homogeneous tailRow fieldType
-  , HomogeneousRowList tailRowList fieldType
   , HomogeneousRowList trash fieldType
   , IsSymbol name
   , RL.RowToList row trash

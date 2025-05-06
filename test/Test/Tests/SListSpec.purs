@@ -1,8 +1,10 @@
 module Test.Tests.SListSpec where
 
 import Prelude
-import Record.ExtraSrghma.SList.Array (slistToANES, slistToAS, slistToNEANES, slistToNEAS)
-import Record.ExtraSrghma.SList.List (slistToLNES, slistToLS, slistToNELNES, slistToNELS)
+import Record.ExtraSrghma.SList.Array
+import Record.ExtraSrghma.SList.List
+import Record.ExtraSrghma.SList.NonEmptyArray
+import Record.ExtraSrghma.SList.NonEmptyList
 import Record.ExtraSrghma.SList.Types (type (:::), SCons, SNil)
 
 import Data.Array.NonEmpty as NonEmptyArray
